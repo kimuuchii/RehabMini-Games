@@ -1,65 +1,760 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<title>Direction Tap</title>
-<script defer src="shared.js"></script>
-<style>
-.grid4{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:520px;margin:0 auto}
-.key{height:24vh;border-radius:16px;display:grid;place-items:center;font-size:40px;font-weight:900;background:#fff;border:2px solid #ddd}
-.titleArrow{text-align:center;font-size:56px;font-weight:900;margin:12px 0}
-.info{color:#666}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Direction Tap</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Sarabun", sans-serif;
+            background: #f0f0f0;
+            touch-action: manipulation;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .container {
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+            overflow-y: auto;
+            height: 100vh;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .checkbox-item input {
+            width: 22px;
+            height: 22px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            margin: 0;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #007AFF;
+            color: white;
+        }
+
+        .btn-primary:active {
+            background: #0051D5;
+        }
+
+        .btn-secondary {
+            background: #5856D6;
+            color: white;
+        }
+
+        .btn-secondary:active {
+            background: #3634A3;
+        }
+
+        .btn-danger {
+            background: #FF3B30;
+            color: white;
+        }
+
+        .btn-danger:active {
+            background: #C9302C;
+        }
+
+        .play-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #f0f0f0;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .play-screen.active {
+            display: flex;
+        }
+
+        .direction-display {
+            font-size: 120px;
+            margin-bottom: 40px;
+            text-shadow: 4px 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .direction-display.correct {
+            color: #34C759;
+            transform: scale(1.1);
+        }
+
+        .direction-display.wrong {
+            color: #FF3B30;
+            transform: scale(0.9);
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .direction-button {
+            width: 120px;
+            height: 120px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            font-size: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .direction-button:active {
+            transform: scale(0.95);
+        }
+
+        .direction-button.correct {
+            background: #34C759;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .direction-button.wrong {
+            background: #FF3B30;
+            color: white;
+            transform: scale(0.95);
+        }
+
+        .direction-button.up { background: #007AFF; color: white; }
+        .direction-button.down { background: #FF9500; color: white; }
+        .direction-button.left { background: #34C759; color: white; }
+        .direction-button.right { background: #AF52DE; color: white; }
+
+        .game-info {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .level-display {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .instruction {
+            font-size: 18px;
+            opacity: 0.8;
+        }
+
+        .stats-display {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            z-index: 1000;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .close-btn:active {
+            background: rgba(255,255,255,0.7);
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            z-index: 1000;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:active {
+            background: rgba(255,255,255,0.7);
+        }
+
+        .error {
+            color: #FF3B30;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .countdown {
+            font-size: 120px;
+            font-weight: bold;
+            color: #007AFF;
+            text-shadow: 4px 4px 12px rgba(0,0,0,0.3);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .mode-indicator {
+            position: absolute;
+            top: 80px;
+            left: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 1000;
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-  <h1>🧭 Direction Tap</h1>
-  <div class="section">
-    <div class="section-title">ตั้งค่า</div>
-    <div class="input-group"><label>รอบต่อนาที (RPM)</label><input id="rpm" type="number" min="6" max="120" value="24"></div>
-    <div class="checkbox-group">
-      <div class="checkbox-item"><input id="cong" type="checkbox" checked><label for="cong">โหมดตรงไปตรงมา (ยกเลิก = หลอก)</label></div>
-      <div class="checkbox-item"><input id="voice" type="checkbox"><label for="voice">พูดคำสั่ง</label></div>
-    </div>
-    <div class="button-group">
-      <button class="btn-primary" id="start">เริ่ม</button>
-      <button class="btn-danger" id="stop">หยุด</button>
-      <a class="btn-secondary" href="index.html" style="text-align:center;display:block">↩︎ กลับหน้าเลือกเกม</a>
-    </div>
-    <div class="info" id="score">พร้อม!</div>
-  </div>
-</div>
+    <div class="container" id="settingsScreen">
+        <h1>↔️ Direction Tap</h1>
 
-<div class="titleArrow" id="shown">＋</div>
-<section class="grid4" style="padding:0 16px 16px">
-  <button class="key" id="U">⬆︎</button>
-  <button class="key" id="R">➡︎</button>
-  <button class="key" id="L">⬅︎</button>
-  <button class="key" id="D">⬇︎</button>
-</section>
+        <div class="section">
+            <div class="section-title">ตั้งค่าการเล่น</div>
+            <div class="input-group">
+                <label>จำนวนรอบ (5-50 รอบ)</label>
+                <input type="number" id="roundsInput" min="5" max="50" value="20">
+            </div>
+            <div class="input-group">
+                <label>เวลาที่แสดงทิศทาง (มิลลิวินาที)</label>
+                <input type="number" id="showTimeInput" min="1000" max="5000" value="2000">
+            </div>
+            <div class="input-group">
+                <label>เวลาห่างระหว่างรอบ (มิลลิวินาที)</label>
+                <input type="number" id="gapInput" min="500" max="2000" value="1000">
+            </div>
+        </div>
 
-<script>
-const keys=['L','R','U','D']; const mapText={L:'ซ้าย',R:'ขวา',U:'บน',D:'ล่าง'};
-let target='L', timer=null, running=false, ok=0, total=0;
-function nextCue(){
-  const shown=keys[Math.floor(Math.random()*keys.length)];
-  target = $('#cong').checked ? shown : ( ()=>{ let k; do{k=keys[Math.floor(Math.random()*keys.length)]}while(k===shown); return k; } )();
-  $('#shown').textContent = shown==='L'?'⬅︎':shown==='R'?'➡︎':shown==='U'?'⬆︎':'⬇︎';
-  if($('#voice').checked) speak(mapText[target],'th-TH',0.95);
-}
-function score(b){ total++; if(b) ok++; $('#score').textContent=`ถูก ${ok} / ${total}`; }
-keys.forEach(k=>{
-  $('#'+k).addEventListener('touchstart',()=>tap(k),{passive:true});
-  $('#'+k).addEventListener('click',()=>tap(k));
-});
-function tap(k){ if(!running) return; score(k===target); nextCue(); }
-$('#start').onclick=()=>{ if(running) return; running=true; ok=0; total=0; nextCue();
-  const interval=Math.max(500, Math.round(60000/Math.max(6,+$('#rpm').value)));
-  clearInterval(timer); timer=setInterval(nextCue, interval);
-};
-$('#stop').onclick=()=>{ running=false; clearInterval(timer); toast(`สรุป: ถูก ${ok}/${total}`); };
-</script>
+        <div class="section">
+            <div class="section-title">โหมดการเล่น</div>
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="radio" name="mode" id="modeVisual" value="visual" checked>
+                    <label for="modeVisual">แตะตามทิศทางที่เห็น</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="radio" name="mode" id="modeAudio" value="audio">
+                    <label for="modeAudio">แตะตามทิศทางที่ได้ยิน</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="radio" name="mode" id="modeMixed" value="mixed">
+                    <label for="modeMixed">ผสมผสาน (หลอกสมอง)</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">การตั้งค่า</div>
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="voiceCheck" checked>
+                    <label for="voiceCheck">พูดคำแนะนำ</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="soundCheck" checked>
+                    <label for="soundCheck">เสียงเมื่อแตะถูก</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="effectCheck" checked>
+                    <label for="effectCheck">แสดงเอฟเฟกต์</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-primary" onclick="startGame()">🚀 เริ่มเล่น</button>
+            <button class="btn-secondary" onclick="previewGame()">👁️ ทดลอง 1 รอบ</button>
+            <button class="btn-danger" onclick="resetSettings()">🔄 คืนค่าเริ่มต้น</button>
+        </div>
+    </div>
+
+    <div class="play-screen" id="playScreen">
+        <a href="index.html" class="back-btn">↩︎ กลับหน้าเลือกเกม</a>
+        <div class="mode-indicator" id="modeIndicator">โหมด: แตะตามทิศทางที่เห็น</div>
+        <div class="stats-display" id="statsDisplay">
+            <div>รอบ: <span id="currentRound">0</span>/<span id="totalRounds">20</span></div>
+            <div>ถูก: <span id="correctCount">0</span></div>
+            <div>ผิด: <span id="wrongCount">0</span></div>
+            <div>ความถูกต้อง: <span id="accuracy">0%</span></div>
+        </div>
+        <button class="close-btn" onclick="stopGame()">ปิด</button>
+        
+        <div class="game-info">
+            <div class="level-display" id="levelDisplay">รอบ 1</div>
+            <div class="instruction" id="instruction">เตรียมพร้อม...</div>
+        </div>
+
+        <div class="direction-display" id="directionDisplay">⬆️</div>
+
+        <div class="button-grid">
+            <button class="direction-button up" data-direction="up" onclick="handleDirectionClick('up')">⬆️</button>
+            <button class="direction-button down" data-direction="down" onclick="handleDirectionClick('down')">⬇️</button>
+            <button class="direction-button left" data-direction="left" onclick="handleDirectionClick('left')">⬅️</button>
+            <button class="direction-button right" data-direction="right" onclick="handleDirectionClick('right')">➡️</button>
+        </div>
+    </div>
+
+    <script src="shared.js"></script>
+    <script>
+        const DIRECTIONS = ['up', 'down', 'left', 'right'];
+        const DIRECTION_EMOJIS = {
+            up: '⬆️',
+            down: '⬇️',
+            left: '⬅️',
+            right: '➡️'
+        };
+        const DIRECTION_NAMES = {
+            up: 'ขึ้น',
+            down: 'ลง',
+            left: 'ซ้าย',
+            right: 'ขวา'
+        };
+
+        let gameStats = {
+            totalRounds: 20,
+            currentRound: 0,
+            correctCount: 0,
+            wrongCount: 0,
+            currentDirection: null,
+            isPlaying: false,
+            isShowing: false,
+            startTime: 0
+        };
+
+        let settings = {
+            rounds: 20,
+            showTime: 2000,
+            gap: 1000,
+            mode: 'visual',
+            voice: true,
+            sound: true,
+            effect: true
+        };
+
+        let gameInterval = null;
+
+        function startGame() {
+            // อัปเดตการตั้งค่า
+            settings.rounds = parseInt(document.getElementById('roundsInput').value) || 20;
+            settings.showTime = parseInt(document.getElementById('showTimeInput').value) || 2000;
+            settings.gap = parseInt(document.getElementById('gapInput').value) || 1000;
+            settings.mode = document.querySelector('input[name="mode"]:checked').value;
+            settings.voice = document.getElementById('voiceCheck').checked;
+            settings.sound = document.getElementById('soundCheck').checked;
+            settings.effect = document.getElementById('effectCheck').checked;
+
+            // บันทึกการตั้งค่า
+            saveSettings('direction', settings);
+
+            // รีเซ็ตสถิติ
+            gameStats = {
+                totalRounds: settings.rounds,
+                currentRound: 0,
+                correctCount: 0,
+                wrongCount: 0,
+                currentDirection: null,
+                isPlaying: false,
+                isShowing: false,
+                startTime: Date.now()
+            };
+
+            document.getElementById('settingsScreen').style.display = 'none';
+            document.getElementById('playScreen').classList.add('active');
+
+            startCountdown();
+        }
+
+        function startCountdown() {
+            countdownOverlay(() => {
+                startDirectionGame();
+            }, 3);
+        }
+
+        function startDirectionGame() {
+            gameStats.isPlaying = true;
+            gameStats.startTime = Date.now();
+            gameStats.currentRound = 0;
+
+            // อัปเดตการแสดงผล
+            updateDisplay();
+            updateModeIndicator();
+
+            // พูดคำแนะนำ
+            if (settings.voice) {
+                const modeText = {
+                    visual: 'แตะตามทิศทางที่เห็น',
+                    audio: 'แตะตามทิศทางที่ได้ยิน',
+                    mixed: 'แตะตามทิศทางที่ได้ยิน ไม่ใช่ที่เห็น'
+                };
+                speak(`${modeText[settings.mode]} จำนวน ${settings.rounds} รอบ`);
+            }
+
+            nextRound();
+        }
+
+        function nextRound() {
+            if (gameStats.currentRound >= gameStats.totalRounds) {
+                endGame();
+                return;
+            }
+
+            gameStats.currentRound++;
+            updateDisplay();
+
+            // สุ่มทิศทาง
+            gameStats.currentDirection = DIRECTIONS[Math.floor(Math.random() * DIRECTIONS.length)];
+            
+            // แสดงทิศทาง
+            showDirection();
+        }
+
+        function showDirection() {
+            gameStats.isShowing = true;
+            
+            // แสดงทิศทางตามโหมด
+            let displayDirection = gameStats.currentDirection;
+            let audioDirection = gameStats.currentDirection;
+            
+            if (settings.mode === 'mixed') {
+                // โหมดหลอกสมอง - แสดงทิศทางหนึ่ง แต่ให้เสียงอีกทิศทาง
+                const otherDirections = DIRECTIONS.filter(d => d !== gameStats.currentDirection);
+                audioDirection = otherDirections[Math.floor(Math.random() * otherDirections.length)];
+            } else if (settings.mode === 'audio') {
+                // โหมดเสียง - ไม่แสดงทิศทาง
+                displayDirection = null;
+            }
+
+            // แสดงทิศทาง
+            if (displayDirection) {
+                document.getElementById('directionDisplay').textContent = DIRECTION_EMOJIS[displayDirection];
+                document.getElementById('directionDisplay').style.display = 'block';
+            } else {
+                document.getElementById('directionDisplay').style.display = 'none';
+            }
+
+            // พูดทิศทาง
+            if (settings.voice) {
+                speak(DIRECTION_NAMES[audioDirection]);
+            }
+
+            // ตั้งเวลาให้ซ่อนทิศทาง
+            setTimeout(() => {
+                document.getElementById('directionDisplay').style.display = 'none';
+                gameStats.isShowing = false;
+                
+                // เปิดการแตะ
+                document.querySelectorAll('.direction-button').forEach(btn => {
+                    btn.disabled = false;
+                });
+            }, settings.showTime);
+        }
+
+        function handleDirectionClick(direction) {
+            if (!gameStats.isPlaying || gameStats.isShowing) return;
+
+            // ปิดการแตะ
+            document.querySelectorAll('.direction-button').forEach(btn => {
+                btn.disabled = true;
+            });
+
+            // ตรวจสอบคำตอบ
+            let correctDirection = gameStats.currentDirection;
+            
+            if (settings.mode === 'mixed') {
+                // โหมดหลอกสมอง - ใช้ทิศทางที่ได้ยิน
+                const otherDirections = DIRECTIONS.filter(d => d !== gameStats.currentDirection);
+                correctDirection = otherDirections[Math.floor(Math.random() * otherDirections.length)];
+            }
+
+            const isCorrect = direction === correctDirection;
+            
+            if (isCorrect) {
+                gameStats.correctCount++;
+                showFeedback(true, direction);
+                
+                if (settings.sound) {
+                    beep(600, 200);
+                }
+                
+                if (settings.voice) {
+                    speak('ถูกต้อง!');
+                }
+            } else {
+                gameStats.wrongCount++;
+                showFeedback(false, direction);
+                
+                if (settings.voice) {
+                    speak('ผิด!');
+                }
+            }
+
+            updateDisplay();
+
+            // ไปรอบถัดไป
+            setTimeout(() => {
+                nextRound();
+            }, settings.gap);
+        }
+
+        function showFeedback(isCorrect, direction) {
+            const button = document.querySelector(`[data-direction="${direction}"]`);
+            
+            if (isCorrect) {
+                button.classList.add('correct');
+                if (settings.effect) {
+                    toast('ถูกต้อง!');
+                }
+            } else {
+                button.classList.add('wrong');
+                if (settings.effect) {
+                    toast('ผิด!');
+                }
+            }
+
+            setTimeout(() => {
+                button.classList.remove('correct', 'wrong');
+            }, 500);
+        }
+
+        function updateDisplay() {
+            document.getElementById('currentRound').textContent = gameStats.currentRound;
+            document.getElementById('totalRounds').textContent = gameStats.totalRounds;
+            document.getElementById('correctCount').textContent = gameStats.correctCount;
+            document.getElementById('wrongCount').textContent = gameStats.wrongCount;
+            
+            const total = gameStats.correctCount + gameStats.wrongCount;
+            const accuracy = total > 0 ? calculateAccuracy(gameStats.correctCount, total) : 0;
+            document.getElementById('accuracy').textContent = `${accuracy}%`;
+            
+            document.getElementById('levelDisplay').textContent = `รอบ ${gameStats.currentRound}`;
+        }
+
+        function updateModeIndicator() {
+            const modeTexts = {
+                visual: 'แตะตามทิศทางที่เห็น',
+                audio: 'แตะตามทิศทางที่ได้ยิน',
+                mixed: 'แตะตามทิศทางที่ได้ยิน (หลอกสมอง)'
+            };
+            document.getElementById('modeIndicator').textContent = `โหมด: ${modeTexts[settings.mode]}`;
+        }
+
+        function endGame() {
+            gameStats.isPlaying = false;
+            
+            // คำนวณสถิติ
+            const totalTime = Math.round((Date.now() - gameStats.startTime) / 1000);
+            const accuracy = calculateAccuracy(gameStats.correctCount, gameStats.totalRounds);
+            const avgTimePerRound = gameStats.totalRounds > 0 ? Math.round(totalTime / gameStats.totalRounds) : 0;
+
+            // บันทึกสถิติ
+            saveStats('direction', {
+                totalRounds: gameStats.totalRounds,
+                correctCount: gameStats.correctCount,
+                wrongCount: gameStats.wrongCount,
+                accuracy: accuracy,
+                totalTime: totalTime,
+                avgTimePerRound: avgTimePerRound,
+                mode: settings.mode
+            });
+
+            // แสดงผลลัพธ์
+            showResults('↔️ Direction Tap', {
+                'รอบทั้งหมด': `${gameStats.totalRounds} รอบ`,
+                'ถูก': `${gameStats.correctCount} รอบ`,
+                'ผิด': `${gameStats.wrongCount} รอบ`,
+                'ความถูกต้อง': `${accuracy}%`,
+                'เวลารวม': `${totalTime} วินาที`,
+                'เวลาเฉลี่ย': `${avgTimePerRound} วินาที/รอบ`,
+                'โหมด': settings.mode
+            });
+
+            // กลับไปหน้าเมนู
+            setTimeout(() => {
+                document.getElementById('playScreen').classList.remove('active');
+                document.getElementById('settingsScreen').style.display = 'block';
+            }, 1000);
+        }
+
+        function previewGame() {
+            // ทดลอง 1 รอบ
+            const originalRounds = settings.rounds;
+            settings.rounds = 1;
+            startGame();
+            settings.rounds = originalRounds;
+        }
+
+        function stopGame() {
+            gameStats.isPlaying = false;
+            gameStats.isShowing = false;
+            
+            if (gameInterval) {
+                clearInterval(gameInterval);
+            }
+            
+            document.getElementById('playScreen').classList.remove('active');
+            document.getElementById('settingsScreen').style.display = 'block';
+        }
+
+        function resetSettings() {
+            settings = {
+                rounds: 20,
+                showTime: 2000,
+                gap: 1000,
+                mode: 'visual',
+                voice: true,
+                sound: true,
+                effect: true
+            };
+            
+            document.getElementById('roundsInput').value = 20;
+            document.getElementById('showTimeInput').value = 2000;
+            document.getElementById('gapInput').value = 1000;
+            document.getElementById('modeVisual').checked = true;
+            document.getElementById('voiceCheck').checked = true;
+            document.getElementById('soundCheck').checked = true;
+            document.getElementById('effectCheck').checked = true;
+        }
+
+        function loadSettings() {
+            const savedSettings = getSettings()['direction'];
+            if (savedSettings) {
+                settings = { ...settings, ...savedSettings };
+                
+                document.getElementById('roundsInput').value = settings.rounds;
+                document.getElementById('showTimeInput').value = settings.showTime;
+                document.getElementById('gapInput').value = settings.gap;
+                document.querySelector(`input[name="mode"][value="${settings.mode}"]`).checked = true;
+                document.getElementById('voiceCheck').checked = settings.voice;
+                document.getElementById('soundCheck').checked = settings.sound;
+                document.getElementById('effectCheck').checked = settings.effect;
+            }
+        }
+
+        window.addEventListener('load', () => {
+            initGame();
+            loadSettings();
+        });
+    </script>
 </body>
 </html>
