@@ -2,361 +2,89 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="mobile-web-app-capable" content="yes">
-    <title>Rehab Mini-Games</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Rehab Mini-Games | โปรแกรมฝึกสมอง</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap');
+        :root {
+            --color-blue: #007AFF;
+            --color-green: #34C759;
+            --color-bg: #f0f0f0;
+            --font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
         }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Sarabun", sans-serif;
-            background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
-            min-height: 100vh;
-            touch-action: manipulation;
-            overflow-x: hidden;
-        }
-
-        .container {
+            font-family: var(--font-family);
+            background-color: var(--color-bg);
+            margin: 0;
             padding: 20px;
-            max-width: 500px;
-            margin: 0 auto;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             min-height: 100vh;
         }
-
-        .header {
-            text-align: center;
-            color: white;
-            margin-bottom: 40px;
-            padding-top: 20px;
+        h1 {
+            color: var(--color-blue);
+            font-size: 2.5rem;
+            margin-bottom: 30px;
         }
-
-        .header h1 {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .header p {
-            font-size: 16px;
-            opacity: 0.9;
-        }
-
-        .games-grid {
+        .game-grid {
             display: grid;
+            grid-template-columns: 1fr;
             gap: 20px;
+            max-width: 600px;
+            width: 100%;
             margin-bottom: 40px;
         }
-
-        .game-card {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .game-card:active {
-            transform: scale(0.98);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-
-        .game-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #007AFF, #5856D6);
-        }
-
-        .game-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .game-emoji {
-            font-size: 24px;
-        }
-
-        .game-description {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 12px;
-            line-height: 1.4;
-        }
-
-        .game-stats {
-            font-size: 12px;
-            color: #007AFF;
-            font-weight: 500;
-            background: #F0F8FF;
-            padding: 6px 12px;
-            border-radius: 20px;
-            display: inline-block;
-        }
-
-        .stats-section {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-
-        .stats-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 16px;
-            text-align: center;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-        }
-
-        .stat-item {
-            text-align: center;
-            padding: 16px;
-            background: #F8F9FA;
-            border-radius: 12px;
-        }
-
-        .stat-value {
-            font-size: 24px;
+        .game-button {
+            background-color: white;
+            color: var(--color-blue);
+            border: 4px solid var(--color-blue);
+            padding: 25px 15px;
+            font-size: 1.8rem;
             font-weight: 700;
-            color: #007AFF;
-            margin-bottom: 4px;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: #666;
-            font-weight: 500;
-        }
-
-        .footer {
-            text-align: center;
-            color: white;
-            opacity: 0.8;
-            font-size: 14px;
-            margin-top: 40px;
-            padding-bottom: 20px;
-        }
-
-        .fullscreen-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 50%;
-            font-size: 18px;
+            border-radius: 15px;
             cursor: pointer;
-            backdrop-filter: blur(10px);
-            transition: all 0.2s;
+            text-decoration: none;
+            transition: all 0.15s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-
-        .fullscreen-btn:active {
-            background: rgba(255,255,255,0.3);
-            transform: scale(0.95);
+        .game-button:hover, .game-button:active {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+            background-color: #e6f0ff;
+        }
+        .info-box {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            font-size: 1.1rem;
+            color: #555;
+            border-left: 5px solid var(--color-green);
+        }
+        .icon {
+            margin-right: 10px;
         }
     </style>
+    <script src="shared.js"></script>
 </head>
 <body>
-    <button class="fullscreen-btn" onclick="toggleFullscreen()" title="เปิด/ปิดเต็มจอ">⛶</button>
-    
-    <div class="container">
-        <div class="header">
-            <h1>🧠 Rehab Mini-Games</h1>
-            <p>ฝึกสมองและการตอบสนองสำหรับผู้สูงอายุ</p>
-        </div>
+    <h1>🧩 Rehab Mini-Games</h1>
 
-        <div class="stats-section">
-            <div class="stats-title">📊 สถิติรวม</div>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-value" id="totalGames">0</div>
-                    <div class="stat-label">เกมที่เล่น</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="avgAccuracy">0%</div>
-                    <div class="stat-label">ความถูกต้อง</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="totalTime">0</div>
-                    <div class="stat-label">นาทีที่เล่น</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="streak">0</div>
-                    <div class="stat-label">วันติดต่อ</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="games-grid">
-            <div class="game-card" onclick="goToGame('color-cue')">
-                <div class="game-title">
-                    <span class="game-emoji">🎨</span>
-                    Color Cue Trainer
-                </div>
-                <div class="game-description">ฝึกตอบสนองต่อสีและจำชื่อสี</div>
-                <div class="game-stats" id="color-cue-stats">ยังไม่เคยเล่น</div>
-            </div>
-
-            <div class="game-card" onclick="goToGame('sound-react')">
-                <div class="game-title">
-                    <span class="game-emoji">🔊</span>
-                    Sound Reaction
-                </div>
-                <div class="game-description">ฝึกความเร็วในการตอบสนองต่อเสียง</div>
-                <div class="game-stats" id="sound-react-stats">ยังไม่เคยเล่น</div>
-            </div>
-
-            <div class="game-card" onclick="goToGame('follow-dot')">
-                <div class="game-title">
-                    <span class="game-emoji">👆</span>
-                    Follow the Dot
-                </div>
-                <div class="game-description">ฝึกการประสานงานระหว่างมือและตา</div>
-                <div class="game-stats" id="follow-dot-stats">ยังไม่เคยเล่น</div>
-            </div>
-
-            <div class="game-card" onclick="goToGame('memory')">
-                <div class="game-title">
-                    <span class="game-emoji">🧩</span>
-                    Memory Pattern
-                </div>
-                <div class="game-description">ฝึกความจำด้วยเกมจำลำดับสี</div>
-                <div class="game-stats" id="memory-stats">ยังไม่เคยเล่น</div>
-            </div>
-
-            <div class="game-card" onclick="goToGame('direction')">
-                <div class="game-title">
-                    <span class="game-emoji">↔️</span>
-                    Direction Tap
-                </div>
-                <div class="game-description">ฝึกการตอบสนองตามทิศทาง</div>
-                <div class="game-stats" id="direction-stats">ยังไม่เคยเล่น</div>
-            </div>
-        </div>
-
-        <div class="footer">
-            <p>💡 เพิ่มลงหน้าจอหลักเพื่อใช้งานเต็มจอ</p>
-        </div>
+    <div class="game-grid">
+        <a class="game-button" href="color-cue.html"><span class="icon">🎨</span> Color Cue (ตอบสนองต่อสี)</a>
+        <a class="game-button" href="sound-react.html"><span class="icon">🔊</span> Sound Reaction (ตอบสนองต่อเสียง)</a>
+        <a class="game-button" href="follow-dot.html"><span class="icon">🟢</span> Follow the Dot (แตะตามจุด)</a>
+        <a class="game-button" href="memory.html"><span class="icon">🧠</span> Memory Pattern (จำลำดับสี)</a>
+        <a class="game-button" href="direction.html"><span class="icon">🧭</span> Direction Tap (แตะตามทิศ)</a>
     </div>
 
-    <script src="shared.js"></script>
-    <script>
-        const GAMES = [
-            { id: 'color-cue', name: 'Color Cue Trainer', emoji: '🎨' },
-            { id: 'sound-react', name: 'Sound Reaction', emoji: '🔊' },
-            { id: 'follow-dot', name: 'Follow the Dot', emoji: '👆' },
-            { id: 'memory', name: 'Memory Pattern', emoji: '🧩' },
-            { id: 'direction', name: 'Direction Tap', emoji: '↔️' }
-        ];
-
-        function goToGame(gameId) {
-            window.location.href = `${gameId}.html`;
-        }
-
-        function updateStats() {
-            const stats = getStats();
-            let totalGames = 0;
-            let totalAccuracy = 0;
-            let totalTime = 0;
-            let accuracyCount = 0;
-
-            // อัปเดตสถิติแต่ละเกม
-            GAMES.forEach(game => {
-                const gameStats = stats[game.id];
-                const statsElement = document.getElementById(`${game.id}-stats`);
-                
-                if (gameStats && gameStats.lastPlayed) {
-                    const lastPlayed = formatLastPlayed(gameStats.lastPlayed);
-                    let accuracy = '';
-                    
-                    if (gameStats.accuracy !== undefined) {
-                        accuracy = ` — ถูก ${gameStats.accuracy}%`;
-                        totalAccuracy += gameStats.accuracy;
-                        accuracyCount++;
-                    }
-                    
-                    statsElement.textContent = `🎯 ครั้งล่าสุด: ${lastPlayed}${accuracy}`;
-                    
-                    if (gameStats.rounds) totalGames += gameStats.rounds;
-                    if (gameStats.totalTime) totalTime += gameStats.totalTime;
-                } else {
-                    statsElement.textContent = 'ยังไม่เคยเล่น';
-                }
-            });
-
-            // อัปเดตสถิติรวม
-            document.getElementById('totalGames').textContent = totalGames;
-            document.getElementById('avgAccuracy').textContent = 
-                accuracyCount > 0 ? `${Math.round(totalAccuracy / accuracyCount)}%` : '0%';
-            document.getElementById('totalTime').textContent = Math.round(totalTime / 60);
-            
-            // คำนวณ streak (วันติดต่อ)
-            const today = new Date().toDateString();
-            const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toDateString();
-            let streak = 0;
-            
-            // ตรวจสอบว่าวันนี้เล่นหรือไม่
-            const hasPlayedToday = Object.values(stats).some(gameStats => {
-                if (!gameStats.lastPlayed) return false;
-                const lastPlayedDate = new Date(gameStats.lastPlayed).toDateString();
-                return lastPlayedDate === today;
-            });
-            
-            if (hasPlayedToday) {
-                streak = 1;
-                // ตรวจสอบวันก่อนหน้า
-                for (let i = 1; i < 30; i++) {
-                    const checkDate = new Date(Date.now() - i * 24 * 60 * 60 * 1000).toDateString();
-                    const hasPlayedOnDate = Object.values(stats).some(gameStats => {
-                        if (!gameStats.lastPlayed) return false;
-                        const lastPlayedDate = new Date(gameStats.lastPlayed).toDateString();
-                        return lastPlayedDate === checkDate;
-                    });
-                    
-                    if (hasPlayedOnDate) {
-                        streak++;
-                    } else {
-                        break;
-                    }
-                }
-            }
-            
-            document.getElementById('streak').textContent = streak;
-        }
-
-        // เริ่มต้น
-        window.addEventListener('load', () => {
-            initGame();
-            updateStats();
-        });
-    </script>
+    <div class="info-box">
+        คำแนะนำ: **📱 เปิดใน Safari หรือ Chrome แล้ว Add to Home Screen เพื่อเล่นเต็มจอ**
+        (ใช้เป็น Web App แบบ Fullscreen)
+    </div>
 </body>
 </html>
