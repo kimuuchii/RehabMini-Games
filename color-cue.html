@@ -1,149 +1,602 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="mobile-web-app-capable" content="yes">
-  <title>Color Cue Trainer</title>
-  <script defer src="shared.js"></script>
-  <style>
-    /* ใช้สไตล์เดิมของคุณ */
-    /* (ตัดบางส่วนทิ้งเพื่อความสั้น—ฟังก์ชันเหมือนเดิม) */
-    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f0f0f0;touch-action:manipulation;overflow:hidden;height:100vh;width:100vw}
-    .container{padding:20px;max-width:500px;margin:0 auto;overflow-y:auto;height:100vh}
-    h1{text-align:center;color:#333;margin-bottom:30px;font-size:24px}
-    .section{background:#fff;border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
-    .section-title{font-size:16px;font-weight:600;margin-bottom:15px;color:#555}
-    .color-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:10px}
-    .color-item{display:flex;flex-direction:column;align-items:center;cursor:pointer}
-    .color-swatch{width:70px;height:70px;border-radius:50%;border:4px solid transparent;transition:.2s;box-shadow:0 2px 4px rgba(0,0,0,.2)}
-    .color-item.selected .color-swatch{border-color:#333;transform:scale(1.1)}
-    .color-name{margin-top:8px;font-size:14px;color:#666}
-    .input-group{margin-bottom:15px}
-    label{display:block;margin-bottom:8px;font-size:14px;color:#555}
-    input[type="number"]{width:100%;padding:12px;border:2px solid #ddd;border-radius:8px;font-size:16px}
-    .checkbox-group{display:flex;flex-direction:column;gap:12px}
-    .checkbox-item{display:flex;align-items:center;cursor:pointer}
-    .checkbox-item input{width:22px;height:22px;margin-right:10px}
-    .button-group{display:flex;flex-direction:column;gap:12px;margin-top:20px}
-    button{padding:16px;font-size:16px;font-weight:600;border:none;border-radius:10px;cursor:pointer}
-    .btn-primary{background:#007AFF;color:#fff}.btn-secondary{background:#5856D6;color:#fff}.btn-danger{background:#FF3B30;color:#fff}
-    .play-screen{display:none;position:fixed;inset:0;justify-content:center;align-items:center;flex-direction:column;transition:background-color .5s}
-    .play-screen.active{display:flex}
-    .color-label{font-size:48px;font-weight:800;color:#fff;text-shadow:2px 2px 8px rgba(0,0,0,.5);text-align:center;padding:20px}
-    .timer-display{position:absolute;top:20px;left:20px;font-size:28px;font-weight:700;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.5);background:rgba(0,0,0,.3);padding:10px 20px;border-radius:10px}
-    .close-btn{position:absolute;top:20px;right:20px;background:rgba(255,255,255,.3);color:#fff;border:none;padding:12px 24px;border-radius:8px;font-weight:600}
-    .countdown-screen{font-size:120px;font-weight:800;color:#fff;text-shadow:4px 4px 12px rgba(0,0,0,.7);animation:pulse 1s infinite}
-    @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
-    .error{color:#FF3B30;font-size:14px;margin-top:10px;display:none}.error.show{display:block}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Color Cue Trainer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Sarabun", sans-serif;
+            background: #f0f0f0;
+            touch-action: manipulation;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .container {
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+            overflow-y: auto;
+            height: 100vh;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .color-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .color-swatch {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 4px solid transparent;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .color-item.selected .color-swatch {
+            border-color: #333;
+            transform: scale(1.1);
+        }
+
+        .color-name {
+            margin-top: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .checkbox-item input {
+            width: 22px;
+            height: 22px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            margin: 0;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #007AFF;
+            color: white;
+        }
+
+        .btn-primary:active {
+            background: #0051D5;
+        }
+
+        .btn-secondary {
+            background: #5856D6;
+            color: white;
+        }
+
+        .btn-secondary:active {
+            background: #3634A3;
+        }
+
+        .btn-danger {
+            background: #FF3B30;
+            color: white;
+        }
+
+        .btn-danger:active {
+            background: #C9302C;
+        }
+
+        .play-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            transition: background-color 0.5s ease;
+        }
+
+        .play-screen.active {
+            display: flex;
+        }
+
+        .color-label {
+            font-size: 48px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            text-align: center;
+            padding: 20px;
+        }
+
+        .timer-display {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.3);
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.3);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+
+        .close-btn:active {
+            background: rgba(255,255,255,0.5);
+        }
+
+        .countdown-screen {
+            font-size: 120px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 4px 4px 12px rgba(0,0,0,0.7);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .error {
+            color: #FF3B30;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.3);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:active {
+            background: rgba(255,255,255,0.5);
+        }
+    </style>
 </head>
 <body>
-  <div class="container" id="settingsScreen">
-    <h1>🎨 Color Cue Trainer</h1>
-    <div class="section">
-      <div class="section-title">เลือกสีที่จะสุ่ม (2-6 สี)</div>
-      <div class="color-grid" id="colorGrid"></div>
-      <div class="error" id="colorError">กรุณาเลือกอย่างน้อย 2 สี</div>
-    </div>
-    <div class="section">
-      <div class="section-title">ตั้งค่าเวลา & โหมด</div>
-      <div class="input-group">
-        <label>เวลาเปลี่ยนสีอัตโนมัติ (วินาที)</label>
-        <input type="number" id="timeInput" min="1" max="30" value="5">
-      </div>
-      <div class="checkbox-group">
-        <div class="checkbox-item"><input type="checkbox" id="voiceCheck" checked><label for="voiceCheck">พูดชื่อสี</label></div>
-        <div class="checkbox-item"><input type="checkbox" id="randomCheck" checked><label for="randomCheck">สุ่มสี</label></div>
-        <div class="checkbox-item"><input type="checkbox" id="tapCheck" checked><label for="tapCheck">แตะเพื่อเปลี่ยน</label></div>
-      </div>
-    </div>
-    <div class="button-group">
-      <button class="btn-primary" onclick="startGame()">🚀 เริ่ม</button>
-      <button class="btn-secondary" onclick="previewColor()">👁️ ลองสุ่มสี 1 ครั้ง</button>
-      <a class="btn-danger" href="index.html" style="text-align:center;display:block">↩︎ กลับหน้าเลือกเกม</a>
-    </div>
-  </div>
+    <div class="container" id="settingsScreen">
+        <h1>🎨 Color Cue Trainer</h1>
 
-  <div class="play-screen" id="playScreen">
-    <div class="timer-display" id="timerDisplay">5</div>
-    <button class="close-btn" onclick="stopGame()">ปิด</button>
-    <div class="color-label" id="colorLabel"></div>
-  </div>
+        <div class="section">
+            <div class="section-title">เลือกสีที่จะสุ่ม (2-6 สี)</div>
+            <div class="color-grid" id="colorGrid"></div>
+            <div class="error" id="colorError">กรุณาเลือกอย่างน้อย 2 สี</div>
+        </div>
 
-<script>
-const COLORS = [
-  { name:'แดง', nameEng:'red', hex:'#FF3B30' },
-  { name:'เหลือง', nameEng:'yellow', hex:'#FFCC00' },
-  { name:'เขียว', nameEng:'green', hex:'#34C759' },
-  { name:'น้ำเงิน', nameEng:'blue', hex:'#007AFF' },
-  { name:'ส้ม', nameEng:'orange', hex:'#FF9500' },
-  { name:'ม่วง', nameEng:'purple', hex:'#AF52DE' }
-];
-let gameInterval=null, currentTime=0;
-const settings={ colors:[0,1,2], time:5, voice:true, random:true, tap:true };
+        <div class="section">
+            <div class="section-title">ตั้งค่าเวลา & โหมด</div>
+            <div class="input-group">
+                <label>เวลาเปลี่ยนสีอัตโนมัติ (วินาที)</label>
+                <input type="number" id="timeInput" min="1" max="30" value="5">
+            </div>
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="voiceCheck" checked>
+                    <label for="voiceCheck">พูดชื่อสี</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="randomCheck" checked>
+                    <label for="randomCheck">สุ่มสี</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="tapCheck" checked>
+                    <label for="tapCheck">แตะเพื่อเปลี่ยน</label>
+                </div>
+            </div>
+        </div>
 
-function initColorGrid(){
-  const grid=$('#colorGrid');
-  COLORS.forEach((c,i)=>{
-    const item=document.createElement('div'); item.className='color-item';
-    if(settings.colors.includes(i)) item.classList.add('selected');
-    item.innerHTML=`<div class="color-swatch" style="background:${c.hex}"></div><div class="color-name">${c.name}</div>`;
-    item.onclick=()=> toggleColor(i,item); grid.appendChild(item);
-  });
-}
-function toggleColor(i,el){
-  const k=settings.colors.indexOf(i);
-  if(k>-1){ settings.colors.splice(k,1); el.classList.remove('selected'); }
-  else { if(settings.colors.length<6){ settings.colors.push(i); el.classList.add('selected'); } }
-  $('#colorError').classList.remove('show');
-}
-function previewColor(){
-  if(settings.colors.length<2){ $('#colorError').classList.add('show'); return; }
-  const idx=settings.colors[Math.floor(Math.random()*settings.colors.length)];
-  const c=COLORS[idx];
-  const ps=$('#playScreen'); ps.style.backgroundColor=c.hex; $('#colorLabel').textContent=c.name;
-  $('#timerDisplay').style.display='none'; ps.classList.add('active'); if($('#voiceCheck').checked) speak(c.name);
-  setTimeout(()=>{ ps.classList.remove('active'); $('#timerDisplay').style.display='block'; },1500);
-}
-function startGame(){
-  if(settings.colors.length<2){ $('#colorError').classList.add('show'); return; }
-  settings.time=+$('#timeInput').value||5; settings.voice=$('#voiceCheck').checked;
-  settings.random=$('#randomCheck').checked; settings.tap=$('#tapCheck').checked;
-  $('#settingsScreen').style.display='none'; $('#playScreen').classList.add('active');
-  countdownOverlay(3, ()=> startColorGame());
-}
-function startColorGame(){
-  const selected=settings.colors.map(i=>COLORS[i]);
-  let currentIndex=0, lastIndex=-1;
-  function showNext(){
-    if(settings.random){
-      let j; do{ j = Math.floor(Math.random()*selected.length); }while(selected.length>1 && j===lastIndex);
-      currentIndex=j; lastIndex=j;
-    }else{
-      currentIndex=(currentIndex+1)%selected.length;
-    }
-    const c=selected[currentIndex];
-    $('#playScreen').style.backgroundColor=c.hex; $('#colorLabel').textContent=c.name;
-    if(settings.voice) speak(c.name);
-    currentTime=settings.time; updateTimer();
-  }
-  function updateTimer(){ $('#timerDisplay').textContent=`${currentTime} วิ`; }
-  showNext();
-  clearInterval(gameInterval);
-  gameInterval=setInterval(()=>{
-    currentTime--; updateTimer();
-    if(currentTime<=0) showNext();
-  },1000);
-  if(settings.tap){
-    $('#playScreen').onclick=(e)=>{ if(e.target.id==='playScreen'||e.target.id==='colorLabel'){ showNext(); } };
-  }
-}
-function stopGame(){ clearInterval(gameInterval); $('#playScreen').classList.remove('active'); $('#playScreen').onclick=null; $('#settingsScreen').style.display='block'; }
-window.onload=initColorGrid;
-</script>
+        <div class="button-group">
+            <button class="btn-primary" onclick="startGame()">🚀 เริ่ม</button>
+            <button class="btn-secondary" onclick="previewColor()">👁️ ลองสุ่มสี 1 ครั้ง</button>
+            <button class="btn-danger" onclick="resetSettings()">🔄 คืนค่าเริ่มต้น</button>
+        </div>
+    </div>
+
+    <div class="play-screen" id="playScreen">
+        <a href="index.html" class="back-btn">↩︎ กลับหน้าเลือกเกม</a>
+        <div class="timer-display" id="timerDisplay">5</div>
+        <button class="close-btn" onclick="stopGame()">ปิด</button>
+        <div class="color-label" id="colorLabel"></div>
+    </div>
+
+    <script src="shared.js"></script>
+    <script>
+        const COLORS = [
+            { name: 'แดง', nameEng: 'red', hex: '#FF3B30' },
+            { name: 'เหลือง', nameEng: 'yellow', hex: '#FFCC00' },
+            { name: 'เขียว', nameEng: 'green', hex: '#34C759' },
+            { name: 'น้ำเงิน', nameEng: 'blue', hex: '#007AFF' },
+            { name: 'ส้ม', nameEng: 'orange', hex: '#FF9500' },
+            { name: 'ม่วง', nameEng: 'purple', hex: '#AF52DE' }
+        ];
+
+        let selectedColors = [];
+        let gameInterval = null;
+        let currentTime = 0;
+        let gameStats = {
+            rounds: 0,
+            correct: 0,
+            totalTime: 0,
+            startTime: 0
+        };
+
+        let settings = {
+            colors: [0, 1, 2, 3],
+            time: 5,
+            voice: true,
+            random: true,
+            tap: true
+        };
+
+        function initColorGrid() {
+            const grid = document.getElementById('colorGrid');
+            COLORS.forEach((color, index) => {
+                const item = document.createElement('div');
+                item.className = 'color-item';
+                if (settings.colors.includes(index)) {
+                    item.classList.add('selected');
+                }
+                item.innerHTML = `
+                    <div class="color-swatch" style="background-color: ${color.hex}"></div>
+                    <div class="color-name">${color.name}</div>
+                `;
+                item.onclick = () => toggleColor(index, item);
+                grid.appendChild(item);
+            });
+        }
+
+        function toggleColor(index, element) {
+            const colorIndex = settings.colors.indexOf(index);
+            if (colorIndex > -1) {
+                settings.colors.splice(colorIndex, 1);
+                element.classList.remove('selected');
+            } else {
+                if (settings.colors.length < 6) {
+                    settings.colors.push(index);
+                    element.classList.add('selected');
+                }
+            }
+            document.getElementById('colorError').classList.remove('show');
+        }
+
+        function previewColor() {
+            if (settings.colors.length < 2) {
+                document.getElementById('colorError').classList.add('show');
+                return;
+            }
+            const randomIndex = settings.colors[Math.floor(Math.random() * settings.colors.length)];
+            const color = COLORS[randomIndex];
+            
+            const playScreen = document.getElementById('playScreen');
+            playScreen.style.backgroundColor = color.hex;
+            document.getElementById('colorLabel').textContent = color.name;
+            document.getElementById('timerDisplay').style.display = 'none';
+            playScreen.classList.add('active');
+
+            if (settings.voice) {
+                speak(color.name);
+            }
+
+            setTimeout(() => {
+                playScreen.classList.remove('active');
+                document.getElementById('timerDisplay').style.display = 'block';
+            }, 2000);
+        }
+
+        function startGame() {
+            if (settings.colors.length < 2) {
+                document.getElementById('colorError').classList.add('show');
+                return;
+            }
+
+            // อัปเดตการตั้งค่า
+            settings.time = parseInt(document.getElementById('timeInput').value) || 5;
+            settings.voice = document.getElementById('voiceCheck').checked;
+            settings.random = document.getElementById('randomCheck').checked;
+            settings.tap = document.getElementById('tapCheck').checked;
+
+            // บันทึกการตั้งค่า
+            saveSettings('color-cue', settings);
+
+            // รีเซ็ตสถิติ
+            gameStats = {
+                rounds: 0,
+                correct: 0,
+                totalTime: 0,
+                startTime: Date.now()
+            };
+
+            document.getElementById('settingsScreen').style.display = 'none';
+            document.getElementById('playScreen').classList.add('active');
+
+            startCountdown();
+        }
+
+        function startCountdown() {
+            countdownOverlay(() => {
+                startColorGame();
+            }, 3);
+        }
+
+        function startColorGame() {
+            selectedColors = settings.colors.map(i => COLORS[i]);
+            if (!settings.random) {
+                selectedColors.sort((a, b) => COLORS.indexOf(a) - COLORS.indexOf(b));
+            }
+            
+            let currentIndex = 0;
+            let lastColorIndex = -1;
+            let repeatCount = 0;
+            
+            function showNextColor() {
+                if (settings.random) {
+                    let newIndex;
+                    
+                    // ถ้าสีเดิมซ้ำไปแล้ว 2 ครั้ง ต้องเปลี่ยนสีใหม่
+                    if (repeatCount >= 2) {
+                        do {
+                            newIndex = Math.floor(Math.random() * selectedColors.length);
+                        } while (newIndex === lastColorIndex && selectedColors.length > 1);
+                        repeatCount = 0;
+                    } else {
+                        newIndex = Math.floor(Math.random() * selectedColors.length);
+                        
+                        // ถ้าได้สีเดิม เพิ่มตัวนับ
+                        if (newIndex === lastColorIndex) {
+                            repeatCount++;
+                        } else {
+                            repeatCount = 0;
+                        }
+                    }
+                    
+                    currentIndex = newIndex;
+                    lastColorIndex = newIndex;
+                } else {
+                    currentIndex = (currentIndex + 1) % selectedColors.length;
+                }
+                
+                const color = selectedColors[currentIndex];
+                document.getElementById('playScreen').style.backgroundColor = color.hex;
+                document.getElementById('colorLabel').textContent = color.name;
+                
+                if (settings.voice) {
+                    speak(color.name);
+                }
+                
+                currentTime = settings.time;
+                updateTimer();
+                gameStats.rounds++;
+            }
+
+            function updateTimer() {
+                document.getElementById('timerDisplay').textContent = `${currentTime} วิ`;
+            }
+
+            showNextColor();
+
+            gameInterval = setInterval(() => {
+                currentTime--;
+                updateTimer();
+                
+                if (currentTime <= 0) {
+                    showNextColor();
+                }
+            }, 1000);
+
+            if (settings.tap) {
+                document.getElementById('playScreen').onclick = (e) => {
+                    if (e.target.id === 'playScreen' || e.target.id === 'colorLabel') {
+                        showNextColor();
+                    }
+                };
+            }
+        }
+
+        function stopGame() {
+            clearInterval(gameInterval);
+            
+            // คำนวณสถิติ
+            gameStats.totalTime = Math.round((Date.now() - gameStats.startTime) / 1000);
+            const accuracy = calculateAccuracy(gameStats.correct, gameStats.rounds);
+            
+            // บันทึกสถิติ
+            saveStats('color-cue', {
+                rounds: gameStats.rounds,
+                correct: gameStats.correct,
+                accuracy: accuracy,
+                totalTime: gameStats.totalTime,
+                avgTime: gameStats.rounds > 0 ? Math.round(gameStats.totalTime / gameStats.rounds) : 0
+            });
+
+            // แสดงผลลัพธ์
+            showResults('🎨 Color Cue Trainer', {
+                'รอบที่เล่น': `${gameStats.rounds} รอบ`,
+                'ความถูกต้อง': `${accuracy}%`,
+                'เวลารวม': `${gameStats.totalTime} วินาที`,
+                'เวลาเฉลี่ย': `${gameStats.rounds > 0 ? Math.round(gameStats.totalTime / gameStats.rounds) : 0} วินาที/รอบ`
+            });
+
+            document.getElementById('playScreen').classList.remove('active');
+            document.getElementById('playScreen').onclick = null;
+            document.getElementById('settingsScreen').style.display = 'block';
+        }
+
+        function resetSettings() {
+            settings = {
+                colors: [0, 1, 2, 3],
+                time: 5,
+                voice: true,
+                random: true,
+                tap: true
+            };
+            
+            document.getElementById('timeInput').value = 5;
+            document.getElementById('voiceCheck').checked = true;
+            document.getElementById('randomCheck').checked = true;
+            document.getElementById('tapCheck').checked = true;
+            
+            document.querySelectorAll('.color-item').forEach((item, index) => {
+                if (settings.colors.includes(index)) {
+                    item.classList.add('selected');
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+        }
+
+        function loadSettings() {
+            const savedSettings = getSettings()['color-cue'];
+            if (savedSettings) {
+                settings = { ...settings, ...savedSettings };
+                
+                document.getElementById('timeInput').value = settings.time;
+                document.getElementById('voiceCheck').checked = settings.voice;
+                document.getElementById('randomCheck').checked = settings.random;
+                document.getElementById('tapCheck').checked = settings.tap;
+                
+                // อัปเดตสีที่เลือก
+                document.querySelectorAll('.color-item').forEach((item, index) => {
+                    if (settings.colors.includes(index)) {
+                        item.classList.add('selected');
+                    } else {
+                        item.classList.remove('selected');
+                    }
+                });
+            }
+        }
+
+        window.addEventListener('load', () => {
+            initGame();
+            initColorGrid();
+            loadSettings();
+        });
+    </script>
 </body>
 </html>
