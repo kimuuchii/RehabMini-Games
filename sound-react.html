@@ -2,584 +2,204 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="mobile-web-app-capable" content="yes">
-    <title>Sound Reaction</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Sound Reaction | ฝึกตอบสนองต่อเสียง</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
+        /* Shared & Base Styles */
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap');
+        :root {
+            --color-blue: #007AFF;
+            --color-green: #34C759;
+            --color-bg: #f0f0f0;
+            --font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
         }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Sarabun", sans-serif;
-            background: #f0f0f0;
-            touch-action: manipulation;
-            overflow: hidden;
-            height: 100vh;
-            width: 100vw;
-        }
-
-        .container {
-            padding: 20px;
-            max-width: 500px;
-            margin: 0 auto;
-            overflow-y: auto;
-            height: 100vh;
-        }
-
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-            font-size: 24px;
-        }
-
-        .section {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .section-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: #555;
-        }
-
-        .input-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: #555;
-        }
-
-        input[type="number"] {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-
-        .checkbox-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-        }
-
-        .checkbox-item input {
-            width: 22px;
-            height: 22px;
-            margin-right: 10px;
-            cursor: pointer;
-        }
-
-        .checkbox-item label {
+            font-family: var(--font-family);
             margin: 0;
-            cursor: pointer;
-            font-size: 15px;
-        }
-
-        .button-group {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            margin-top: 20px;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            background-color: var(--color-bg);
         }
-
-        button {
-            padding: 16px;
-            font-size: 16px;
-            font-weight: 600;
+        .settings-panel, .result-panel {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 90%;
+            text-align: left;
+        }
+        h2 { color: var(--color-blue); font-size: 2rem; margin-top: 0; text-align: center; }
+        label { display: block; margin-bottom: 15px; font-size: 1.2rem; font-weight: 700; }
+        input[type="number"] { width: 100%; padding: 10px; margin-top: 5px; border: 2px solid #ccc; border-radius: 8px; font-size: 1.1rem; box-sizing: border-box; }
+        .start-button, .home-button {
+            background-color: var(--color-green);
+            color: white;
+            width: 100%;
+            padding: 15px;
             border: none;
             border-radius: 10px;
+            font-size: 1.8rem;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s;
+            margin-top: 20px;
+            transition: all 0.15s;
         }
+        .home-button { background-color: var(--color-blue); margin-top: 10px; font-size: 1.4rem; }
+        .start-button:active, .home-button:active { transform: translateY(2px); }
 
-        .btn-primary {
-            background: #007AFF;
-            color: white;
-        }
-
-        .btn-primary:active {
-            background: #0051D5;
-        }
-
-        .btn-secondary {
-            background: #5856D6;
-            color: white;
-        }
-
-        .btn-secondary:active {
-            background: #3634A3;
-        }
-
-        .btn-danger {
-            background: #FF3B30;
-            color: white;
-        }
-
-        .btn-danger:active {
-            background: #C9302C;
-        }
-
-        .play-screen {
+        /* Game Display Styles */
+        #gameArea {
             display: none;
+            width: 100vw;
+            height: 100vh;
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
+            background-color: #333; /* พื้นหลังมืดระหว่างรอ */
+            color: white;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
-            background: #333;
-            transition: background-color 0.3s ease;
-        }
-
-        .play-screen.active {
-            display: flex;
-        }
-
-        .play-screen.waiting {
-            background: #FF3B30;
-        }
-
-        .play-screen.ready {
-            background: #34C759;
-        }
-
-        .instruction {
-            font-size: 32px;
-            font-weight: bold;
-            color: white;
-            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
-            text-align: center;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .reaction-time {
-            font-size: 48px;
-            font-weight: bold;
-            color: white;
-            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .stats-display {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            color: white;
-            font-size: 16px;
-            background: rgba(0,0,0,0.3);
-            padding: 10px 15px;
-            border-radius: 8px;
-        }
-
-        .close-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255,255,255,0.3);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 3rem;
+            font-weight: 700;
             cursor: pointer;
-            backdrop-filter: blur(10px);
+            transition: background-color 0.2s;
         }
-
-        .close-btn:active {
-            background: rgba(255,255,255,0.5);
-        }
-
-        .back-btn {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(255,255,255,0.3);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            backdrop-filter: blur(10px);
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .back-btn:active {
-            background: rgba(255,255,255,0.5);
-        }
-
-        .error {
-            color: #FF3B30;
-            font-size: 14px;
-            margin-top: 10px;
-            display: none;
-        }
-
-        .error.show {
-            display: block;
-        }
-
-        .countdown {
-            font-size: 120px;
-            font-weight: bold;
-            color: white;
-            text-shadow: 4px 4px 12px rgba(0,0,0,0.7);
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+        #gameArea.ready { background-color: #FF3B30; } /* สีแดงเมื่อพร้อมให้แตะ */
+        #resultDisplay {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-top: 20px;
         }
     </style>
+    <script src="shared.js"></script>
 </head>
 <body>
-    <div class="container" id="settingsScreen">
-        <h1>🔊 Sound Reaction</h1>
+    <div class="settings-panel" id="settingsPanel">
+        <button class="home-button" onclick="goTo('index.html')">🏠 กลับหน้าหลัก</button>
+        <h2>🔊 Sound Reaction Setup</h2>
+        
+        <label for="rounds">🎯 จำนวนรอบที่เล่น:</label>
+        <input type="number" id="rounds" value="10" min="1" max="50">
 
-        <div class="section">
-            <div class="section-title">ตั้งค่าการทดสอบ</div>
-            <div class="input-group">
-                <label>จำนวนรอบ (1-20 รอบ)</label>
-                <input type="number" id="roundsInput" min="1" max="20" value="10">
-            </div>
-            <div class="input-group">
-                <label>เวลารอขั้นต่ำ (วินาที)</label>
-                <input type="number" id="minWaitInput" min="1" max="10" value="2">
-            </div>
-            <div class="input-group">
-                <label>เวลารอสูงสุด (วินาที)</label>
-                <input type="number" id="maxWaitInput" min="2" max="15" value="6">
-            </div>
-        </div>
+        <label for="waitTimeMin">⏱️ เวลารอสุ่มต่ำสุด (วินาที):</label>
+        <input type="number" id="waitTimeMin" value="2" min="1" max="5">
 
-        <div class="section">
-            <div class="section-title">การตั้งค่า</div>
-            <div class="checkbox-group">
-                <div class="checkbox-item">
-                    <input type="checkbox" id="voiceCheck" checked>
-                    <label for="voiceCheck">พูดคำแนะนำ</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="soundCheck" checked>
-                    <label for="soundCheck">เสียงเตือน</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="visualCheck" checked>
-                    <label for="visualCheck">เปลี่ยนสีหน้าจอ</label>
-                </div>
-            </div>
-        </div>
-
-        <div class="button-group">
-            <button class="btn-primary" onclick="startGame()">🚀 เริ่มทดสอบ</button>
-            <button class="btn-secondary" onclick="previewTest()">👁️ ทดลอง 1 ครั้ง</button>
-            <button class="btn-danger" onclick="resetSettings()">🔄 คืนค่าเริ่มต้น</button>
-        </div>
+        <label for="waitTimeMax">⏱️ เวลารอสุ่มสูงสุด (วินาที):</label>
+        <input type="number" id="waitTimeMax" value="6" min="3" max="10">
+        
+        <button class="start-button" onclick="startGame()">เริ่มเกม</button>
     </div>
 
-    <div class="play-screen" id="playScreen">
-        <a href="index.html" class="back-btn">↩︎ กลับหน้าเลือกเกม</a>
-        <div class="stats-display" id="statsDisplay">รอบ: 0/10</div>
-        <button class="close-btn" onclick="stopGame()">ปิด</button>
-        <div class="instruction" id="instruction">เตรียมพร้อม...</div>
-        <div class="reaction-time" id="reactionTime" style="display: none;"></div>
+    <div id="gameArea">
+        <span id="gameText">รอสัญญาณ...</span>
     </div>
 
-    <script src="shared.js"></script>
-    <script>
-        let gameStats = {
-            rounds: 0,
-            totalRounds: 10,
-            reactionTimes: [],
-            startTime: 0,
-            waitingStartTime: 0,
-            isWaiting: false,
-            currentRound: 0
-        };
+    <div class="result-panel" id="resultPanel" style="display: none;">
+        <h2>สรุปผลการฝึก</h2>
+        <div id="resultDisplay"></div>
+        <button class="start-button" onclick="window.location.reload()">เล่นใหม่อีกครั้ง</button>
+        <button class="home-button" onclick="goTo('index.html')">🏠 กลับหน้าหลัก</button>
+    </div>
 
-        let settings = {
-            rounds: 10,
-            minWait: 2,
-            maxWait: 6,
-            voice: true,
-            sound: true,
-            visual: true
-        };
+<script>
+    let totalRounds = 0;
+    let currentRound = 0;
+    let reactionTimes = [];
+    let waitTimeout;
+    let startTime;
+    let gameReady = false;
+    let gameStarted = false;
 
-        let gameInterval = null;
-        let waitInterval = null;
+    function resetGameArea() {
+        document.getElementById('gameArea').classList.remove('ready');
+        document.getElementById('gameText').textContent = 'รอสัญญาณ...';
+        gameReady = false;
+    }
 
-        function startGame() {
-            // อัปเดตการตั้งค่า
-            settings.rounds = parseInt(document.getElementById('roundsInput').value) || 10;
-            settings.minWait = parseInt(document.getElementById('minWaitInput').value) || 2;
-            settings.maxWait = parseInt(document.getElementById('maxWaitInput').value) || 6;
-            settings.voice = document.getElementById('voiceCheck').checked;
-            settings.sound = document.getElementById('soundCheck').checked;
-            settings.visual = document.getElementById('visualCheck').checked;
-
-            // ตรวจสอบการตั้งค่า
-            if (settings.minWait >= settings.maxWait) {
-                toast('เวลารอขั้นต่ำต้องน้อยกว่าสูงสุด');
-                return;
-            }
-
-            // บันทึกการตั้งค่า
-            saveSettings('sound-react', settings);
-
-            // รีเซ็ตสถิติ
-            gameStats = {
-                rounds: 0,
-                totalRounds: settings.rounds,
-                reactionTimes: [],
-                startTime: Date.now(),
-                waitingStartTime: 0,
-                isWaiting: false,
-                currentRound: 0
-            };
-
-            document.getElementById('settingsScreen').style.display = 'none';
-            document.getElementById('playScreen').classList.add('active');
-
-            startCountdown();
+    function showResult() {
+        gameStarted = false;
+        document.getElementById('gameArea').style.display = 'none';
+        
+        let avgTime = 0;
+        if (reactionTimes.length > 0) {
+            const sum = reactionTimes.reduce((a, b) => a + b, 0);
+            avgTime = (sum / reactionTimes.length).toFixed(0);
         }
 
-        function startCountdown() {
-            countdownOverlay(() => {
-                startReactionTest();
-            }, 3);
-        }
+        document.getElementById('resultDisplay').innerHTML = `
+            <p><strong>รอบที่เล่น:</strong> ${currentRound} รอบ</p>
+            <p><strong>ค่าเฉลี่ย Reaction Time:</strong> <span style="font-size: 3rem; color: ${avgTime < 400 ? var(--color-green) : var(--color-blue)};">${avgTime}</span> ms</p>
+            <p>(ยิ่งน้อยยิ่งดี)</p>
+        `;
+        document.getElementById('resultPanel').style.display = 'block';
+        beep(2);
+    }
 
-        function startReactionTest() {
-            gameStats.currentRound = 0;
+    function nextRound() {
+        if (currentRound >= totalRounds) {
+            showResult();
+            return;
+        }
+        currentRound++;
+        resetGameArea();
+        
+        const min = parseFloat(document.getElementById('waitTimeMin').value) * 1000;
+        const max = parseFloat(document.getElementById('waitTimeMax').value) * 1000;
+        const waitTime = Math.random() * (max - min) + min;
+
+        waitTimeout = setTimeout(() => {
+            // สัญญาณ "แตะ!"
+            beep(2);
+            speak("แตะ!");
+            document.getElementById('gameArea').classList.add('ready');
+            document.getElementById('gameText').textContent = 'แตะเดี๋ยวนี้!';
+            startTime = Date.now();
+            gameReady = true;
+        }, waitTime);
+    }
+
+    function handleTap() {
+        if (!gameStarted) return; // ป้องกันการแตะก่อนเริ่มเกม
+
+        if (gameReady) {
+            // แตะถูก
+            const reactionTime = Date.now() - startTime;
+            reactionTimes.push(reactionTime);
+            toast(`รอบที่ ${currentRound}: ${reactionTime} ms`);
             nextRound();
+        } else {
+            // แตะเร็วเกินไป
+            clearTimeout(waitTimeout);
+            toast('เร็วไป! คุณแตะก่อนมีสัญญาณ');
+            speak('เร็วไป!');
+            // นับรอบนั้นเป็น miss หรือไม่นับก็ได้, ที่นี่จะนับรอบใหม่
+            nextRound(); 
+        }
+    }
+
+    function startGame() {
+        totalRounds = parseInt(document.getElementById('rounds').value);
+        if (isNaN(totalRounds) || totalRounds < 1) {
+            toast('จำนวนรอบต้องเป็นตัวเลขและมากกว่า 0');
+            return;
         }
 
-        function nextRound() {
-            gameStats.currentRound++;
-            
-            if (gameStats.currentRound > gameStats.totalRounds) {
-                endGame();
-                return;
-            }
+        document.getElementById('settingsPanel').style.display = 'none';
+        document.getElementById('gameArea').style.display = 'flex';
+        document.getElementById('gameArea').addEventListener('touchstart', handleTap);
+        document.getElementById('gameArea').addEventListener('mousedown', handleTap);
 
-            // อัปเดตสถิติ
-            document.getElementById('statsDisplay').textContent = 
-                `รอบ: ${gameStats.currentRound}/${gameStats.totalRounds}`;
-
-            // แสดงคำแนะนำ
-            document.getElementById('instruction').textContent = 'รอเสียงเตือน...';
-            document.getElementById('instruction').style.display = 'block';
-            document.getElementById('reactionTime').style.display = 'none';
-            
-            // เปลี่ยนสีเป็นสีรอ
-            if (settings.visual) {
-                document.getElementById('playScreen').className = 'play-screen active waiting';
-            }
-
-            // พูดคำแนะนำ
-            if (settings.voice) {
-                speak('รอเสียงเตือน แล้วแตะให้เร็วที่สุด');
-            }
-
-            // รอเวลาสุ่ม
-            const waitTime = randomBetween(settings.minWait * 1000, settings.maxWait * 1000);
-            
-            waitInterval = setTimeout(() => {
-                triggerReaction();
-            }, waitTime);
-        }
-
-        function triggerReaction() {
-            gameStats.waitingStartTime = Date.now();
-            gameStats.isWaiting = true;
-
-            // เปลี่ยนสีเป็นสีพร้อม
-            if (settings.visual) {
-                document.getElementById('playScreen').className = 'play-screen active ready';
-            }
-
-            // แสดงคำแนะนำ
-            document.getElementById('instruction').textContent = 'แตะ!';
-            document.getElementById('instruction').style.display = 'block';
-
-            // เสียงเตือน
-            if (settings.sound) {
-                beep(800, 200);
-            }
-
-            // พูดคำแนะนำ
-            if (settings.voice) {
-                speak('แตะ!');
-            }
-
-            // ตั้งค่าให้แตะได้
-            document.getElementById('playScreen').onclick = handleReaction;
-        }
-
-        function handleReaction() {
-            if (!gameStats.isWaiting) return;
-
-            const reactionTime = Date.now() - gameStats.waitingStartTime;
-            gameStats.reactionTimes.push(reactionTime);
-            gameStats.isWaiting = false;
-
-            // แสดงผลลัพธ์
-            document.getElementById('instruction').style.display = 'none';
-            document.getElementById('reactionTime').style.display = 'block';
-            document.getElementById('reactionTime').textContent = `${reactionTime} ms`;
-
-            // เปลี่ยนสีกลับ
-            if (settings.visual) {
-                document.getElementById('playScreen').className = 'play-screen active';
-            }
-
-            // แสดง toast
-            if (reactionTime < 200) {
-                toast('เร็วมาก!');
-            } else if (reactionTime < 400) {
-                toast('ดีมาก!');
-            } else if (reactionTime < 600) {
-                toast('ดี!');
-            } else {
-                toast('ลองใหม่!');
-            }
-
-            // พูดผลลัพธ์
-            if (settings.voice) {
-                speak(`${reactionTime} มิลลิวินาที`);
-            }
-
-            // ปิดการแตะ
-            document.getElementById('playScreen').onclick = null;
-
-            // รอ 2 วินาทีแล้วไปรอบต่อไป
-            setTimeout(() => {
-                nextRound();
-            }, 2000);
-        }
-
-        function endGame() {
-            // คำนวณสถิติ
-            const avgReaction = calculateAverage(gameStats.reactionTimes);
-            const bestReaction = Math.min(...gameStats.reactionTimes);
-            const worstReaction = Math.max(...gameStats.reactionTimes);
-            const totalTime = Math.round((Date.now() - gameStats.startTime) / 1000);
-
-            // บันทึกสถิติ
-            saveStats('sound-react', {
-                rounds: gameStats.totalRounds,
-                avgReaction: avgReaction,
-                bestReaction: bestReaction,
-                worstReaction: worstReaction,
-                totalTime: totalTime,
-                reactionTimes: gameStats.reactionTimes
-            });
-
-            // แสดงผลลัพธ์
-            showResults('🔊 Sound Reaction', {
-                'รอบที่ทดสอบ': `${gameStats.totalRounds} รอบ`,
-                'เวลาเฉลี่ย': `${avgReaction} ms`,
-                'เวลาดีที่สุด': `${bestReaction} ms`,
-                'เวลาช้าที่สุด': `${worstReaction} ms`,
-                'เวลารวม': `${totalTime} วินาที`
-            });
-
-            // กลับไปหน้าเมนู
-            setTimeout(() => {
-                document.getElementById('playScreen').classList.remove('active');
-                document.getElementById('settingsScreen').style.display = 'block';
-            }, 1000);
-        }
-
-        function previewTest() {
-            // ทดลอง 1 ครั้ง
-            const originalRounds = settings.rounds;
-            settings.rounds = 1;
-            startGame();
-            settings.rounds = originalRounds;
-        }
-
-        function stopGame() {
-            if (waitInterval) {
-                clearTimeout(waitInterval);
-            }
-            if (gameInterval) {
-                clearInterval(gameInterval);
-            }
-            
-            document.getElementById('playScreen').classList.remove('active');
-            document.getElementById('playScreen').onclick = null;
-            document.getElementById('settingsScreen').style.display = 'block';
-        }
-
-        function resetSettings() {
-            settings = {
-                rounds: 10,
-                minWait: 2,
-                maxWait: 6,
-                voice: true,
-                sound: true,
-                visual: true
-            };
-            
-            document.getElementById('roundsInput').value = 10;
-            document.getElementById('minWaitInput').value = 2;
-            document.getElementById('maxWaitInput').value = 6;
-            document.getElementById('voiceCheck').checked = true;
-            document.getElementById('soundCheck').checked = true;
-            document.getElementById('visualCheck').checked = true;
-        }
-
-        function loadSettings() {
-            const savedSettings = getSettings()['sound-react'];
-            if (savedSettings) {
-                settings = { ...settings, ...savedSettings };
-                
-                document.getElementById('roundsInput').value = settings.rounds;
-                document.getElementById('minWaitInput').value = settings.minWait;
-                document.getElementById('maxWaitInput').value = settings.maxWait;
-                document.getElementById('voiceCheck').checked = settings.voice;
-                document.getElementById('soundCheck').checked = settings.sound;
-                document.getElementById('visualCheck').checked = settings.visual;
-            }
-        }
-
-        window.addEventListener('load', () => {
-            initGame();
-            loadSettings();
+        countdownOverlay(3, () => {
+            gameStarted = true;
+            nextRound();
         });
-    </script>
+    }
+
+</script>
 </body>
 </html>
