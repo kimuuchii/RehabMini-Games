@@ -1,56 +1,649 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<title>Follow the Dot</title>
-<script defer src="shared.js"></script>
-<style>
-.dot{position:absolute;width:80px;height:80px;border-radius:50%;display:grid;place-items:center;background:#34C759;color:#000;font-weight:900;box-shadow:0 6px 18px rgba(0,0,0,.3)}
-@media(min-width:600px){.dot{width:90px;height:90px}}
-.score{font-size:14px;color:#666;margin-top:8px}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Follow the Dot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Sarabun", sans-serif;
+            background: #f0f0f0;
+            touch-action: manipulation;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .container {
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+            overflow-y: auto;
+            height: 100vh;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .checkbox-item input {
+            width: 22px;
+            height: 22px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            margin: 0;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #007AFF;
+            color: white;
+        }
+
+        .btn-primary:active {
+            background: #0051D5;
+        }
+
+        .btn-secondary {
+            background: #5856D6;
+            color: white;
+        }
+
+        .btn-secondary:active {
+            background: #3634A3;
+        }
+
+        .btn-danger {
+            background: #FF3B30;
+            color: white;
+        }
+
+        .btn-danger:active {
+            background: #C9302C;
+        }
+
+        .play-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #f0f0f0;
+            cursor: crosshair;
+        }
+
+        .play-screen.active {
+            display: block;
+        }
+
+        .dot {
+            position: absolute;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .dot:hover {
+            transform: scale(1.1);
+        }
+
+        .dot:active {
+            transform: scale(0.9);
+        }
+
+        .stats-display {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            z-index: 1000;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .close-btn:active {
+            background: rgba(255,255,255,0.7);
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            z-index: 1000;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:active {
+            background: rgba(255,255,255,0.7);
+        }
+
+        .error {
+            color: #FF3B30;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .countdown {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 120px;
+            font-weight: bold;
+            color: #007AFF;
+            text-shadow: 4px 4px 12px rgba(0,0,0,0.3);
+            animation: pulse 1s infinite;
+            z-index: 1000;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        .miss-effect {
+            position: absolute;
+            color: #FF3B30;
+            font-size: 24px;
+            font-weight: bold;
+            pointer-events: none;
+            animation: fadeOut 1s ease-out forwards;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-20px); }
+        }
+
+        .hit-effect {
+            position: absolute;
+            color: #34C759;
+            font-size: 24px;
+            font-weight: bold;
+            pointer-events: none;
+            animation: fadeOut 1s ease-out forwards;
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-  <h1>🟢 Follow the Dot</h1>
-  <div class="section">
-    <div class="section-title">ตั้งค่า</div>
-    <div class="input-group"><label>เวลาที่จุดคงอยู่ (ms)</label><input id="life" type="number" value="1200" min="300" max="4000" step="100"></div>
-    <div class="input-group"><label>ช่วงห่างระหว่างจุด (ms)</label><input id="gap" type="number" value="400" min="0" max="2000" step="50"></div>
-    <div class="checkbox-group"><div class="checkbox-item"><input id="randColor" type="checkbox"><label for="randColor">สุ่มสีจุด</label></div></div>
-    <div class="button-group">
-      <button class="btn-primary" id="start">เริ่ม</button>
-      <button class="btn-danger" id="stop">หยุด</button>
-      <a class="btn-secondary" href="index.html" style="text-align:center;display:block">↩︎ กลับหน้าเลือกเกม</a>
+    <div class="container" id="settingsScreen">
+        <h1>👆 Follow the Dot</h1>
+
+        <div class="section">
+            <div class="section-title">ตั้งค่าการเล่น</div>
+            <div class="input-group">
+                <label>จำนวนจุด (5-50 จุด)</label>
+                <input type="number" id="dotsInput" min="5" max="50" value="20">
+            </div>
+            <div class="input-group">
+                <label>เวลาที่จุดแสดง (มิลลิวินาที)</label>
+                <input type="number" id="showTimeInput" min="500" max="5000" value="2000">
+            </div>
+            <div class="input-group">
+                <label>เวลาห่างระหว่างจุด (มิลลิวินาที)</label>
+                <input type="number" id="gapTimeInput" min="200" max="2000" value="500">
+            </div>
+            <div class="input-group">
+                <label>ขนาดจุด (พิกเซล)</label>
+                <input type="number" id="dotSizeInput" min="30" max="100" value="50">
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">การตั้งค่า</div>
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="voiceCheck" checked>
+                    <label for="voiceCheck">พูดคำแนะนำ</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="soundCheck" checked>
+                    <label for="soundCheck">เสียงเมื่อแตะถูก</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="effectCheck" checked>
+                    <label for="effectCheck">แสดงเอฟเฟกต์</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-primary" onclick="startGame()">🚀 เริ่มเล่น</button>
+            <button class="btn-secondary" onclick="previewGame()">👁️ ทดลอง 1 จุด</button>
+            <button class="btn-danger" onclick="resetSettings()">🔄 คืนค่าเริ่มต้น</button>
+        </div>
     </div>
-    <div class="score" id="score">แตะให้ทัน: ถูก 0 · พลาด 0</div>
-  </div>
-</div>
 
-<div id="arena" class="play-screen" style="background:#111a2c"></div>
+    <div class="play-screen" id="playScreen">
+        <a href="index.html" class="back-btn">↩︎ กลับหน้าเลือกเกม</a>
+        <div class="stats-display" id="statsDisplay">
+            <div>แตะ: <span id="hitCount">0</span></div>
+            <div>พลาด: <span id="missCount">0</span></div>
+            <div>ความถูกต้อง: <span id="accuracy">0%</span></div>
+        </div>
+        <button class="close-btn" onclick="stopGame()">ปิด</button>
+    </div>
 
-<script>
-const arena=$('#arena'); let running=false, loopT=null, hit=0, miss=0;
-function spawn(){
-  if(!running) return;
-  const size=80, w=innerWidth, h=innerHeight;
-  const x=Math.random()*(w-size), y=Math.random()*(h-size);
-  const d=document.createElement('div'); d.className='dot'; d.style.left=x+'px'; d.style.top=y+'px';
-  if($('#randColor').checked){
-    const cs=['#34C759','#FF9500','#007AFF','#FF3B30','#AF52DE']; d.style.background=cs[Math.floor(Math.random()*cs.length)];
-  }
-  let alive=true;
-  function hitFn(){ if(!alive) return; alive=false; hit++; beep(900,0.08,0.15); d.remove(); update(); }
-  d.addEventListener('touchstart', hitFn, {passive:true}); d.addEventListener('click', hitFn);
-  arena.appendChild(d);
-  setTimeout(()=>{ if(alive){ miss++; d.remove(); update(); } }, +$('#life').value);
-  loopT=setTimeout(spawn, Math.max(0,+$('#gap').value));
-}
-function update(){ $('#score').textContent=`แตะให้ทัน: ถูก ${hit} · พลาด ${miss}`; }
-$('#start').onclick=()=>{ hit=0; miss=0; update(); running=true; arena.classList.add('active'); spawn(); };
-$('#stop').onclick=()=>{ running=false; clearTimeout(loopT); arena.classList.remove('active'); };
-</script>
+    <script src="shared.js"></script>
+    <script>
+        let gameStats = {
+            totalDots: 20,
+            hitCount: 0,
+            missCount: 0,
+            currentDot: 0,
+            dots: [],
+            startTime: 0,
+            isPlaying: false
+        };
+
+        let settings = {
+            dots: 20,
+            showTime: 2000,
+            gapTime: 500,
+            dotSize: 50,
+            voice: true,
+            sound: true,
+            effect: true
+        };
+
+        let gameInterval = null;
+        let currentDotElement = null;
+
+        function startGame() {
+            // อัปเดตการตั้งค่า
+            settings.dots = parseInt(document.getElementById('dotsInput').value) || 20;
+            settings.showTime = parseInt(document.getElementById('showTimeInput').value) || 2000;
+            settings.gapTime = parseInt(document.getElementById('gapTimeInput').value) || 500;
+            settings.dotSize = parseInt(document.getElementById('dotSizeInput').value) || 50;
+            settings.voice = document.getElementById('voiceCheck').checked;
+            settings.sound = document.getElementById('soundCheck').checked;
+            settings.effect = document.getElementById('effectCheck').checked;
+
+            // บันทึกการตั้งค่า
+            saveSettings('follow-dot', settings);
+
+            // รีเซ็ตสถิติ
+            gameStats = {
+                totalDots: settings.dots,
+                hitCount: 0,
+                missCount: 0,
+                currentDot: 0,
+                dots: [],
+                startTime: Date.now(),
+                isPlaying: false
+            };
+
+            document.getElementById('settingsScreen').style.display = 'none';
+            document.getElementById('playScreen').classList.add('active');
+
+            startCountdown();
+        }
+
+        function startCountdown() {
+            countdownOverlay(() => {
+                startDotGame();
+            }, 3);
+        }
+
+        function startDotGame() {
+            gameStats.isPlaying = true;
+            gameStats.startTime = Date.now();
+            gameStats.currentDot = 0;
+
+            // พูดคำแนะนำ
+            if (settings.voice) {
+                speak(`แตะจุดสีที่ปรากฏให้เร็วที่สุด จำนวน ${settings.dots} จุด`);
+            }
+
+            showNextDot();
+        }
+
+        function showNextDot() {
+            if (gameStats.currentDot >= gameStats.totalDots) {
+                endGame();
+                return;
+            }
+
+            // สร้างจุดใหม่
+            const dot = createDot();
+            currentDotElement = dot;
+            gameStats.dots.push(dot);
+            gameStats.currentDot++;
+
+            // อัปเดตสถิติ
+            updateStats();
+
+            // ตั้งเวลาให้จุดหายไป
+            setTimeout(() => {
+                if (currentDotElement && currentDotElement.parentNode) {
+                    currentDotElement.remove();
+                    if (gameStats.isPlaying) {
+                        gameStats.missCount++;
+                        updateStats();
+                        
+                        if (settings.effect) {
+                            showMissEffect(currentDotElement);
+                        }
+                        
+                        if (settings.voice) {
+                            speak('พลาด!');
+                        }
+                    }
+                }
+            }, settings.showTime);
+
+            // ตั้งเวลาสำหรับจุดถัดไป
+            if (gameStats.currentDot < gameStats.totalDots) {
+                setTimeout(() => {
+                    if (gameStats.isPlaying) {
+                        showNextDot();
+                    }
+                }, settings.gapTime);
+            }
+        }
+
+        function createDot() {
+            const dot = document.createElement('div');
+            dot.className = 'dot';
+            
+            // สุ่มตำแหน่ง
+            const maxX = window.innerWidth - settings.dotSize;
+            const maxY = window.innerHeight - settings.dotSize;
+            const x = Math.random() * maxX;
+            const y = Math.random() * maxY;
+            
+            // ตั้งค่าสไตล์
+            dot.style.left = `${x}px`;
+            dot.style.top = `${y}px`;
+            dot.style.width = `${settings.dotSize}px`;
+            dot.style.height = `${settings.dotSize}px`;
+            dot.style.backgroundColor = randomColor();
+            
+            // ตั้งค่าการคลิก
+            dot.onclick = (e) => {
+                e.stopPropagation();
+                handleDotClick(dot);
+            };
+            
+            document.getElementById('playScreen').appendChild(dot);
+            return dot;
+        }
+
+        function handleDotClick(dot) {
+            if (!gameStats.isPlaying || !currentDotElement || dot !== currentDotElement) {
+                return;
+            }
+
+            // แตะถูก
+            gameStats.hitCount++;
+            updateStats();
+            
+            if (settings.sound) {
+                beep(600, 100);
+            }
+            
+            if (settings.effect) {
+                showHitEffect(dot);
+            }
+            
+            if (settings.voice) {
+                speak('ถูกต้อง!');
+            }
+            
+            // ลบจุด
+            dot.remove();
+            currentDotElement = null;
+        }
+
+        function showHitEffect(dot) {
+            const effect = document.createElement('div');
+            effect.className = 'hit-effect';
+            effect.textContent = '✓';
+            effect.style.left = `${parseInt(dot.style.left) + settings.dotSize/2}px`;
+            effect.style.top = `${parseInt(dot.style.top) + settings.dotSize/2}px`;
+            document.getElementById('playScreen').appendChild(effect);
+            
+            setTimeout(() => {
+                if (effect.parentNode) {
+                    effect.parentNode.removeChild(effect);
+                }
+            }, 1000);
+        }
+
+        function showMissEffect(dot) {
+            const effect = document.createElement('div');
+            effect.className = 'miss-effect';
+            effect.textContent = '✗';
+            effect.style.left = `${parseInt(dot.style.left) + settings.dotSize/2}px`;
+            effect.style.top = `${parseInt(dot.style.top) + settings.dotSize/2}px`;
+            document.getElementById('playScreen').appendChild(effect);
+            
+            setTimeout(() => {
+                if (effect.parentNode) {
+                    effect.parentNode.removeChild(effect);
+                }
+            }, 1000);
+        }
+
+        function updateStats() {
+            const total = gameStats.hitCount + gameStats.missCount;
+            const accuracy = total > 0 ? calculateAccuracy(gameStats.hitCount, total) : 0;
+            
+            document.getElementById('hitCount').textContent = gameStats.hitCount;
+            document.getElementById('missCount').textContent = gameStats.missCount;
+            document.getElementById('accuracy').textContent = `${accuracy}%`;
+        }
+
+        function endGame() {
+            gameStats.isPlaying = false;
+            
+            // คำนวณสถิติ
+            const totalTime = Math.round((Date.now() - gameStats.startTime) / 1000);
+            const accuracy = calculateAccuracy(gameStats.hitCount, gameStats.totalDots);
+            const avgTimePerDot = gameStats.hitCount > 0 ? Math.round(totalTime / gameStats.hitCount) : 0;
+
+            // บันทึกสถิติ
+            saveStats('follow-dot', {
+                totalDots: gameStats.totalDots,
+                hitCount: gameStats.hitCount,
+                missCount: gameStats.missCount,
+                accuracy: accuracy,
+                totalTime: totalTime,
+                avgTimePerDot: avgTimePerDot
+            });
+
+            // แสดงผลลัพธ์
+            showResults('👆 Follow the Dot', {
+                'จุดทั้งหมด': `${gameStats.totalDots} จุด`,
+                'แตะถูก': `${gameStats.hitCount} จุด`,
+                'พลาด': `${gameStats.missCount} จุด`,
+                'ความถูกต้อง': `${accuracy}%`,
+                'เวลารวม': `${totalTime} วินาที`,
+                'เวลาเฉลี่ย': `${avgTimePerDot} วินาที/จุด`
+            });
+
+            // กลับไปหน้าเมนู
+            setTimeout(() => {
+                document.getElementById('playScreen').classList.remove('active');
+                document.getElementById('settingsScreen').style.display = 'block';
+            }, 1000);
+        }
+
+        function previewGame() {
+            // ทดลอง 1 จุด
+            const originalDots = settings.dots;
+            settings.dots = 1;
+            startGame();
+            settings.dots = originalDots;
+        }
+
+        function stopGame() {
+            gameStats.isPlaying = false;
+            
+            if (gameInterval) {
+                clearInterval(gameInterval);
+            }
+            
+            // ลบจุดทั้งหมด
+            document.querySelectorAll('.dot').forEach(dot => dot.remove());
+            
+            document.getElementById('playScreen').classList.remove('active');
+            document.getElementById('settingsScreen').style.display = 'block';
+        }
+
+        function resetSettings() {
+            settings = {
+                dots: 20,
+                showTime: 2000,
+                gapTime: 500,
+                dotSize: 50,
+                voice: true,
+                sound: true,
+                effect: true
+            };
+            
+            document.getElementById('dotsInput').value = 20;
+            document.getElementById('showTimeInput').value = 2000;
+            document.getElementById('gapTimeInput').value = 500;
+            document.getElementById('dotSizeInput').value = 50;
+            document.getElementById('voiceCheck').checked = true;
+            document.getElementById('soundCheck').checked = true;
+            document.getElementById('effectCheck').checked = true;
+        }
+
+        function loadSettings() {
+            const savedSettings = getSettings()['follow-dot'];
+            if (savedSettings) {
+                settings = { ...settings, ...savedSettings };
+                
+                document.getElementById('dotsInput').value = settings.dots;
+                document.getElementById('showTimeInput').value = settings.showTime;
+                document.getElementById('gapTimeInput').value = settings.gapTime;
+                document.getElementById('dotSizeInput').value = settings.dotSize;
+                document.getElementById('voiceCheck').checked = settings.voice;
+                document.getElementById('soundCheck').checked = settings.sound;
+                document.getElementById('effectCheck').checked = settings.effect;
+            }
+        }
+
+        window.addEventListener('load', () => {
+            initGame();
+            loadSettings();
+        });
+    </script>
 </body>
 </html>
