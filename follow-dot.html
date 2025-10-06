@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Follow the Dot</title>
+<script defer src="shared.js"></script>
+<style>
+.dot{position:absolute;width:80px;height:80px;border-radius:50%;display:grid;place-items:center;background:#34C759;color:#000;font-weight:900;box-shadow:0 6px 18px rgba(0,0,0,.3)}
+@media(min-width:600px){.dot{width:90px;height:90px}}
+.score{font-size:14px;color:#666;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🟢 Follow the Dot</h1>
+  <div class="section">
+    <div class="section-title">ตั้งค่า</div>
+    <div class="input-group"><label>เวลาที่จุดคงอยู่ (ms)</label><input id="life" type="number" value="1200" min="300" max="4000" step="100"></div>
+    <div class="input-group"><label>ช่วงห่างระหว่างจุด (ms)</label><input id="gap" type="number" value="400" min="0" max="2000" step="50"></div>
+    <div class="checkbox-group"><div class="checkbox-item"><input id="randColor" type="checkbox"><label for="randColor">สุ่มสีจุด</label></div></div>
+    <div class="button-group">
+      <button class="btn-primary" id="start">เริ่ม</button>
+      <button class="btn-danger" id="stop">หยุด</button>
+      <a class="btn-secondary" href="index.html" style="text-align:center;display:block">↩︎ กลับหน้าเลือกเกม</a>
+    </div>
+    <div class="score" id="score">แตะให้ทัน: ถูก 0 · พลาด 0</div>
+  </div>
+</div>
+
+<div id="arena" class="play-screen" style="background:#111a2c"></div>
+
+<script>
+const arena=$('#arena'); let running=false, loopT=null, hit=0, miss=0;
+function spawn(){
+  if(!running) return;
+  const size=80, w=innerWidth, h=innerHeight;
+  const x=Math.random()*(w-size), y=Math.random()*(h-size);
+  const d=document.createElement('div'); d.className='dot'; d.style.left=x+'px'; d.style.top=y+'px';
+  if($('#randColor').checked){
+    const cs=['#34C759','#FF9500','#007AFF','#FF3B30','#AF52DE']; d.style.background=cs[Math.floor(Math.random()*cs.length)];
+  }
+  let alive=true;
+  function hitFn(){ if(!alive) return; alive=false; hit++; beep(900,0.08,0.15); d.remove(); update(); }
+  d.addEventListener('touchstart', hitFn, {passive:true}); d.addEventListener('click', hitFn);
+  arena.appendChild(d);
+  setTimeout(()=>{ if(alive){ miss++; d.remove(); update(); } }, +$('#life').value);
+  loopT=setTimeout(spawn, Math.max(0,+$('#gap').value));
+}
+function update(){ $('#score').textContent=`แตะให้ทัน: ถูก ${hit} · พลาด ${miss}`; }
+$('#start').onclick=()=>{ hit=0; miss=0; update(); running=true; arena.classList.add('active'); spawn(); };
+$('#stop').onclick=()=>{ running=false; clearTimeout(loopT); arena.classList.remove('active'); };
+</script>
+</body>
+</html>
