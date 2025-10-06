@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Memory Pattern</title>
+<script defer src="shared.js"></script>
+<style>
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:520px;margin:0 auto}
+.tile{height:34vh;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+#a{background:#FF3B30} #b{background:#FFCC00} #c{background:#34C759} #d{background:#007AFF}
+.info{color:#666;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🧠 Memory Pattern</h1>
+  <div class="section">
+    <div class="section-title">วิธีเล่น</div>
+    แตะ “เริ่มรอบใหม่” → ระบบเล่นลำดับสี → จำให้ได้ แล้วแตะตามลำดับให้ถูก
+    <div class="button-group" style="margin-top:12px">
+      <button class="btn-primary" id="start">เริ่มรอบใหม่</button>
+      <a class="btn-secondary" href="index.html" style="text-align:center;display:block">↩︎ กลับหน้าเลือกเกม</a>
+    </div>
+    <div class="info" id="info">พร้อม!</div>
+  </div>
+</div>
+
+<section class="grid" style="padding:16px">
+  <div class="tile" id="a"></div>
+  <div class="tile" id="b"></div>
+  <div class="tile" id="c"></div>
+  <div class="tile" id="d"></div>
+</section>
+
+<script>
+const tiles={a:$('#a'), b:$('#b'), c:$('#c'), d:$('#d')}; const keys=Object.keys(tiles);
+let seq=[], input=[], playing=false;
+function flash(id){ tiles[id].style.filter='brightness(1.6)'; beep(600+140*keys.indexOf(id),.12,.12);
+  setTimeout(()=> tiles[id].style.filter='', 300); }
+function playSeq(){ playing=true; input.length=0; seq.forEach((id,i)=> setTimeout(()=> flash(id), 500+600*i));
+  setTimeout(()=> playing=false, 500+600*seq.length); }
+function nextRound(){ seq.push(keys[Math.floor(Math.random()*keys.length)]); $('#info').textContent=`ระดับ: ${seq.length}`; playSeq(); }
+$('#start').onclick=()=>{ seq=[]; input=[]; $('#info').textContent='เริ่ม!'; setTimeout(nextRound,300); };
+keys.forEach(k=>{
+  tiles[k].addEventListener('touchstart',()=>tap(k),{passive:true}); tiles[k].addEventListener('click',()=>tap(k));
+});
+function tap(k){
+  if(playing||!seq.length) return; input.push(k); flash(k);
+  for(let i=0;i<input.length;i++){ if(input[i]!==seq[i]){ toast('ผิดพลาด! เริ่มใหม่'); speak('ผิดพลาด'); seq=[]; input=[]; $('#info').textContent='เริ่มใหม่'; return; } }
+  if(input.length===seq.length){ toast('ถูกต้อง!'); speak('ถูกต้อง'); setTimeout(nextRound,600); }
+}
+</script>
+</body>
+</html>
