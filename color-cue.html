@@ -1,352 +1,342 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Color Cue | ฝึกตอบสนองต่อสี</title>
-    <style>
-        /* Shared Styles */
-        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap');
-        :root {
-            --color-blue: #007AFF;
-            --color-green: #34C759;
-            --color-bg: #f0f0f0;
-            --font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-        }
-        body {
-            font-family: var(--font-family);
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            text-align: center;
-            background-color: var(--color-bg);
-            transition: background-color 0.5s ease;
-        }
-        /* Game Specific Styles */
-        .settings-panel {
-            background-color: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            width: 90%;
-            text-align: left;
-        }
-        h2 {
-            color: var(--color-blue);
-            font-size: 2rem;
-            margin-top: 0;
-            text-align: center;
-        }
-        label, .option-group {
-            display: block;
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-            font-weight: 700;
-        }
-        input[type="number"], select {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 2px solid #ccc;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            box-sizing: border-box;
-        }
-        .color-option {
-            display: inline-block;
-            margin-right: 10px;
-            margin-bottom: 10px;
-        }
-        .color-box {
-            width: 40px;
-            height: 40px;
-            border-radius: 5px;
-            border: 2px solid #333;
-            cursor: pointer;
-            display: inline-block;
-            vertical-align: middle;
-            transition: transform 0.1s;
-        }
-        input[type="checkbox"] {
-            display: none;
-        }
-        input[type="checkbox"]:checked + .color-box {
-            border-color: var(--color-green);
-            transform: scale(1.1);
-            box-shadow: 0 0 5px var(--color-green);
-        }
-        .start-button {
-            background-color: var(--color-green);
-            color: white;
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.8rem;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: background-color 0.15s, transform 0.1s;
-        }
-        .start-button:active {
-            background-color: #28a745;
-            transform: translateY(2px);
-        }
-
-        /* Game Running State */
-        .game-display {
-            display: none;
-            width: 100vw;
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-            color: white;
-            font-size: 8rem;
-            font-weight: 700;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            cursor: pointer; /* เพื่อใช้ 'แตะเพื่อเปลี่ยน' */
-            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            line-height: 1;
-        }
-        .game-display.active {
-            display: flex;
-        }
-        .game-text {
-            margin-bottom: 20px;
-        }
-        .end-message {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 40px;
-            border-radius: 15px;
-            font-size: 3rem;
-            font-weight: 700;
-            z-index: 100;
-            display: none;
-        }
-        .end-message button {
-            margin-top: 20px;
-            font-size: 1.5rem;
-            padding: 10px 20px;
-        }
-
-        /* Toast styles (from shared.js, but placed here for full code) */
-        .toast-message {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 1.2rem;
-            opacity: 0;
-            transition: all 0.3s ease-out;
-            z-index: 1000;
-        }
-        .toast-message.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-        .toast-message.hide {
-            opacity: 0;
-            transform: translateX(-50%) translateY(100px);
-        }
-        
-        /* Countdown Overlay styles (from shared.js) */
-        .countdown-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 999;
-        }
-        .countdown-number {
-            color: white;
-            font-size: 10rem;
-            font-weight: 700;
-            animation: pulse 1s infinite alternate;
-        }
-        @keyframes pulse {
-            from { transform: scale(1); opacity: 1; }
-            to { transform: scale(1.1); opacity: 0.8; }
-        }
-
-    </style>
-    <script src="shared.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>🎨 Color Cue Game</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Sarabun', -apple-system, sans-serif;
+  transition: background-color 0.5s ease;
+  -webkit-tap-highlight-color: transparent;
+  overflow: hidden;
+  height: 100vh;
+}
+.setup-screen, .game-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+.setup-screen {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+.game-screen {
+  display: none;
+  text-align: center;
+}
+h1 { font-size: 2.5rem; margin-bottom: 30px; }
+.settings {
+  background: rgba(255,255,255,0.95);
+  border-radius: 20px;
+  padding: 30px;
+  max-width: 450px;
+  width: 100%;
+  color: #333;
+}
+.setting-group {
+  margin-bottom: 25px;
+  text-align: left;
+}
+.setting-group label {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.color-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.color-option {
+  aspect-ratio: 1;
+  border-radius: 12px;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+.color-option.selected {
+  border-color: #007AFF;
+  transform: scale(1.05);
+}
+.color-option::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem;
+  color: white;
+  opacity: 0;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+.color-option.selected::after {
+  opacity: 1;
+}
+input[type="range"] {
+  width: 100%;
+  height: 8px;
+  border-radius: 5px;
+  background: #ddd;
+  outline: none;
+  -webkit-appearance: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #007AFF;
+  cursor: pointer;
+}
+.range-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #007AFF;
+  margin-top: 8px;
+}
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+}
+.checkbox-group input[type="checkbox"] {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
+.checkbox-group label {
+  font-size: 1.1rem;
+  margin: 0;
+  cursor: pointer;
+}
+.btn {
+  width: 100%;
+  padding: 18px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 10px;
+}
+.btn-primary {
+  background: #007AFF;
+  color: white;
+}
+.btn-primary:active {
+  transform: scale(0.95);
+}
+.btn-secondary {
+  background: #f0f0f0;
+  color: #333;
+}
+.color-display {
+  font-size: 4rem;
+  font-weight: bold;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+  margin-bottom: 30px;
+}
+.timer-display {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  opacity: 0.8;
+}
+.action-btn {
+  padding: 20px 40px;
+  font-size: 1.5rem;
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+}
+.back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  color: white;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+</style>
 </head>
 <body>
-    <div class="settings-panel" id="settingsPanel">
-        <button class="game-button" style="width:100%; margin-bottom: 20px;" onclick="goTo('index.html')">🏠 กลับหน้าหลัก</button>
-        <h2>🎨 Color Cue Setup</h2>
-        
-        <label for="duration">⏱️ ระยะเวลาเล่น (วินาที):</label>
-        <input type="number" id="duration" value="60" min="10" max="300">
 
-        <label for="changeInterval">🔁 เวลาเปลี่ยนสี (วินาที):</label>
-        <input type="number" id="changeInterval" value="5" min="1" max="30">
-
-        <label>🌈 เลือกสีที่ใช้ (อย่างน้อย 2 สี):</label>
-        <div id="colorOptions">
-            <label class="color-option"><input type="checkbox" data-color="#FF3B30" data-name="แดง" checked><span class="color-box" style="background-color: #FF3B30;"></span></label>
-            <label class="color-option"><input type="checkbox" data-color="#FF9500" data-name="ส้ม" checked><span class="color-box" style="background-color: #FF9500;"></span></label>
-            <label class="color-option"><input type="checkbox" data-color="#34C759" data-name="เขียว" checked><span class="color-box" style="background-color: #34C759;"></span></label>
-            <label class="color-option"><input type="checkbox" data-color="#007AFF" data-name="น้ำเงิน" checked><span class="color-box" style="background-color: #007AFF;"></span></label>
-            <label class="color-option"><input type="checkbox" data-color="#5856D6" data-name="ม่วง"><span class="color-box" style="background-color: #5856D6;"></span></label>
-            <label class="color-option"><input type="checkbox" data-color="#FFCDD2" data-name="ชมพูอ่อน"><span class="color-box" style="background-color: #FFCDD2;"></span></label>
-        </div>
-        
-        <label class="option-group"><input type="checkbox" id="speakColor" checked style="display:inline-block; width: auto;"> ✅ พูดชื่อสี (ใช้ฟังก์ชัน Speak)</label>
-        <label class="option-group"><input type="checkbox" id="tapToChange" style="display:inline-block; width: auto;"> 👆 แตะเพื่อเปลี่ยนสี (แทนการตั้งเวลา)</label>
-        <label class="option-group"><input type="checkbox" id="randomize" checked style="display:inline-block; width: auto;"> 🎲 สุ่มสี</label>
-        
-        <button class="start-button" onclick="startGame()">เริ่มเกม</button>
+<div class="setup-screen">
+  <button class="back-btn" onclick="window.location.href='index.html'">← กลับ</button>
+  <h1>🎨 Color Cue Game</h1>
+  <div class="settings">
+    <div class="setting-group">
+      <label>เลือกสี (2-6 สี)</label>
+      <div class="color-options">
+        <div class="color-option selected" data-color="แดง" style="background: #FF3B30;"></div>
+        <div class="color-option selected" data-color="เขียว" style="background: #34C759;"></div>
+        <div class="color-option" data-color="น้ำเงิน" style="background: #007AFF;"></div>
+        <div class="color-option" data-color="เหลือง" style="background: #FFCC00;"></div>
+        <div class="color-option" data-color="ม่วง" style="background: #AF52DE;"></div>
+        <div class="color-option" data-color="ส้ม" style="background: #FF9500;"></div>
+      </div>
     </div>
-
-    <div class="game-display" id="gameDisplay">
-        <div class="game-text" id="colorName"></div>
+    
+    <div class="setting-group">
+      <label>ระยะเวลาแต่ละสี</label>
+      <input type="range" id="intervalRange" min="1" max="30" value="3">
+      <div class="range-value"><span id="intervalValue">3</span> วินาที</div>
     </div>
-
-    <div class="end-message" id="endMessage">
-        <p>🎉 ฝึกเสร็จแล้ว!</p>
-        <button onclick="window.location.reload()">ตั้งค่าใหม่</button>
+    
+    <div class="checkbox-group">
+      <input type="checkbox" id="speakColor" checked>
+      <label for="speakColor">✅ พูดชื่อสี</label>
     </div>
+    
+    <div class="checkbox-group">
+      <input type="checkbox" id="randomMode" checked>
+      <label for="randomMode">🎲 สุ่มสี</label>
+    </div>
+    
+    <div class="checkbox-group">
+      <input type="checkbox" id="tapMode">
+      <label for="tapMode">👆 แตะเพื่อเปลี่ยน</label>
+    </div>
+    
+    <button class="btn btn-primary" onclick="startGame()">เริ่มเกม</button>
+  </div>
+</div>
 
+<div class="game-screen">
+  <div class="timer-display" id="timer"></div>
+  <div class="color-display" id="colorName"></div>
+  <button class="btn action-btn" id="tapBtn" style="display:none;" onclick="nextColor()">👆<br>แตะ</button>
+  <button class="btn btn-secondary" onclick="endGame()" style="max-width:200px;">จบเกม</button>
+</div>
+
+<script src="shared.js"></script>
 <script>
-    let timer;
-    let gameDurationTimeout;
-    let availableColors = [];
-    let isGameRunning = false;
-    let currentBackgroundColor = '';
-    let currentColorName = '';
+const colorMap = {
+  'แดง': '#FF3B30',
+  'เขียว': '#34C759',
+  'น้ำเงิน': '#007AFF',
+  'เหลือง': '#FFCC00',
+  'ม่วง': '#AF52DE',
+  'ส้ม': '#FF9500'
+};
 
-    const colors = {
-        "#FF3B30": "แดง",
-        "#FF9500": "ส้ม",
-        "#34C759": "เขียว",
-        "#007AFF": "น้ำเงิน",
-        "#5856D6": "ม่วง",
-        "#FFCDD2": "ชมพูอ่อน"
-    };
+let selectedColors = [];
+let interval, gameTimer;
+let currentColorIndex = 0;
+let colorHistory = [];
 
-    function selectNewColor() {
-        if (availableColors.length === 0) return;
-        
-        const randomize = document.getElementById('randomize').checked;
-        let nextColor, nextName;
+// Color selection
+document.querySelectorAll('.color-option').forEach(opt => {
+  opt.addEventListener('click', function() {
+    this.classList.toggle('selected');
+    const selected = document.querySelectorAll('.color-option.selected');
+    if (selected.length < 2) this.classList.add('selected');
+  });
+});
 
-        if (randomize) {
-            const randomIndex = Math.floor(Math.random() * availableColors.length);
-            nextColor = availableColors[randomIndex].color;
-            nextName = availableColors[randomIndex].name;
-        } else {
-            // โหมดไม่สุ่ม: วนตามลำดับ
-            const currentIndex = availableColors.findIndex(c => c.color === currentBackgroundColor);
-            const nextIndex = (currentIndex + 1) % availableColors.length;
-            nextColor = availableColors[nextIndex].color;
-            nextName = availableColors[nextIndex].name;
-        }
-        
-        currentBackgroundColor = nextColor;
-        currentColorName = nextName;
-        
-        // อัพเดท UI
-        document.body.style.backgroundColor = nextColor;
-        document.getElementById('colorName').textContent = nextName;
+// Range slider
+document.getElementById('intervalRange').addEventListener('input', function() {
+  document.getElementById('intervalValue').textContent = this.value;
+});
 
-        // พูดชื่อสี
-        if (document.getElementById('speakColor').checked) {
-            speak(nextName);
-        }
+function startGame() {
+  const selected = document.querySelectorAll('.color-option.selected');
+  if (selected.length < 2) {
+    toast('กรุณาเลือกอย่างน้อย 2 สี');
+    return;
+  }
+  
+  selectedColors = Array.from(selected).map(el => el.dataset.color);
+  const intervalTime = parseInt(document.getElementById('intervalRange').value);
+  const tapMode = document.getElementById('tapMode').checked;
+  
+  document.querySelector('.setup-screen').style.display = 'none';
+  document.querySelector('.game-screen').style.display = 'flex';
+  
+  if (tapMode) {
+    document.getElementById('tapBtn').style.display = 'flex';
+  }
+  
+  countdownOverlay(3, () => {
+    showColor();
+    if (!tapMode) {
+      interval = setInterval(nextColor, intervalTime * 1000);
     }
+  });
+}
 
-    function gameLoop() {
-        if (!isGameRunning) return;
-        selectNewColor();
-        
-        // ถ้าไม่ได้เลือก 'แตะเพื่อเปลี่ยน' ให้ตั้งเวลาเปลี่ยนสีต่อไป
-        if (!document.getElementById('tapToChange').checked) {
-            const interval = parseFloat(document.getElementById('changeInterval').value) * 1000;
-            timer = setTimeout(gameLoop, interval);
-        }
-    }
+function getNextColor() {
+  const randomMode = document.getElementById('randomMode').checked;
+  
+  if (!randomMode) {
+    currentColorIndex = (currentColorIndex + 1) % selectedColors.length;
+    return selectedColors[currentColorIndex];
+  }
+  
+  // สุ่มสี แต่ไม่ซ้ำกันเกิน 2 ครั้ง
+  let attempts = 0;
+  let newColor;
+  
+  do {
+    newColor = selectedColors[Math.floor(Math.random() * selectedColors.length)];
+    attempts++;
+  } while (
+    attempts < 20 &&
+    colorHistory.length >= 2 &&
+    colorHistory[colorHistory.length - 1] === newColor &&
+    colorHistory[colorHistory.length - 2] === newColor
+  );
+  
+  return newColor;
+}
 
-    function checkColorSelection() {
-        const selected = Array.from(document.querySelectorAll('#colorOptions input[type="checkbox"]:checked'));
-        if (selected.length < 2) {
-            toast('กรุณาเลือกสีอย่างน้อย 2 สี');
-            return false;
-        }
-        availableColors = selected.map(el => ({
-            color: el.dataset.color,
-            name: el.dataset.name
-        }));
-        return true;
-    }
+function showColor() {
+  const color = getNextColor();
+  colorHistory.push(color);
+  if (colorHistory.length > 3) colorHistory.shift();
+  
+  const hex = colorMap[color];
+  document.body.style.backgroundColor = hex;
+  document.getElementById('colorName').textContent = color;
+  
+  if (document.getElementById('speakColor').checked) {
+    speak(color);
+  }
+}
 
-    function endGame() {
-        clearTimeout(timer);
-        clearTimeout(gameDurationTimeout);
-        isGameRunning = false;
-        document.getElementById('gameDisplay').classList.remove('active');
-        document.getElementById('endMessage').style.display = 'block';
-        document.body.style.backgroundColor = var(--color-bg);
-        beep(2);
-    }
+function nextColor() {
+  showColor();
+}
 
-    function startGame() {
-        if (!checkColorSelection()) return;
-
-        const duration = parseFloat(document.getElementById('duration').value);
-        const tapToChange = document.getElementById('tapToChange').checked;
-        
-        document.getElementById('settingsPanel').style.display = 'none';
-        document.getElementById('gameDisplay').classList.add('active');
-
-        // ตั้งค่า Tap handler
-        if (tapToChange) {
-            document.getElementById('gameDisplay').onclick = gameLoop;
-        } else {
-            document.getElementById('gameDisplay').onclick = null; // ปิด tap
-        }
-
-        countdownOverlay(3, () => {
-            isGameRunning = true;
-            
-            // ตั้งเวลาจบเกม
-            gameDurationTimeout = setTimeout(endGame, duration * 1000);
-            
-            // เริ่มเกม
-            if (!tapToChange) {
-                gameLoop(); // เริ่ม GameLoop ที่มี setTimeout
-            } else {
-                selectNewColor(); // แสดงสีแรกทันที รอผู้ใช้แตะ
-            }
-        });
-    }
-
-    // ฟังก์ชันสำหรับปิดการตั้งค่าที่ไม่ตรงกัน
-    document.getElementById('tapToChange').addEventListener('change', (e) => {
-        document.getElementById('changeInterval').disabled = e.target.checked;
-    });
-
+function endGame() {
+  clearInterval(interval);
+  toast('ฝึกเสร็จแล้ว!', 3000);
+  setTimeout(() => {
+    window.location.href = 'index.html';
+  }, 2000);
+}
 </script>
+
 </body>
 </html>
