@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Direction Tap</title>
+<script defer src="shared.js"></script>
+<style>
+.grid4{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:520px;margin:0 auto}
+.key{height:24vh;border-radius:16px;display:grid;place-items:center;font-size:40px;font-weight:900;background:#fff;border:2px solid #ddd}
+.titleArrow{text-align:center;font-size:56px;font-weight:900;margin:12px 0}
+.info{color:#666}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🧭 Direction Tap</h1>
+  <div class="section">
+    <div class="section-title">ตั้งค่า</div>
+    <div class="input-group"><label>รอบต่อนาที (RPM)</label><input id="rpm" type="number" min="6" max="120" value="24"></div>
+    <div class="checkbox-group">
+      <div class="checkbox-item"><input id="cong" type="checkbox" checked><label for="cong">โหมดตรงไปตรงมา (ยกเลิก = หลอก)</label></div>
+      <div class="checkbox-item"><input id="voice" type="checkbox"><label for="voice">พูดคำสั่ง</label></div>
+    </div>
+    <div class="button-group">
+      <button class="btn-primary" id="start">เริ่ม</button>
+      <button class="btn-danger" id="stop">หยุด</button>
+      <a class="btn-secondary" href="index.html" style="text-align:center;display:block">↩︎ กลับหน้าเลือกเกม</a>
+    </div>
+    <div class="info" id="score">พร้อม!</div>
+  </div>
+</div>
+
+<div class="titleArrow" id="shown">＋</div>
+<section class="grid4" style="padding:0 16px 16px">
+  <button class="key" id="U">⬆︎</button>
+  <button class="key" id="R">➡︎</button>
+  <button class="key" id="L">⬅︎</button>
+  <button class="key" id="D">⬇︎</button>
+</section>
+
+<script>
+const keys=['L','R','U','D']; const mapText={L:'ซ้าย',R:'ขวา',U:'บน',D:'ล่าง'};
+let target='L', timer=null, running=false, ok=0, total=0;
+function nextCue(){
+  const shown=keys[Math.floor(Math.random()*keys.length)];
+  target = $('#cong').checked ? shown : ( ()=>{ let k; do{k=keys[Math.floor(Math.random()*keys.length)]}while(k===shown); return k; } )();
+  $('#shown').textContent = shown==='L'?'⬅︎':shown==='R'?'➡︎':shown==='U'?'⬆︎':'⬇︎';
+  if($('#voice').checked) speak(mapText[target],'th-TH',0.95);
+}
+function score(b){ total++; if(b) ok++; $('#score').textContent=`ถูก ${ok} / ${total}`; }
+keys.forEach(k=>{
+  $('#'+k).addEventListener('touchstart',()=>tap(k),{passive:true});
+  $('#'+k).addEventListener('click',()=>tap(k));
+});
+function tap(k){ if(!running) return; score(k===target); nextCue(); }
+$('#start').onclick=()=>{ if(running) return; running=true; ok=0; total=0; nextCue();
+  const interval=Math.max(500, Math.round(60000/Math.max(6,+$('#rpm').value)));
+  clearInterval(timer); timer=setInterval(nextCue, interval);
+};
+$('#stop').onclick=()=>{ running=false; clearInterval(timer); toast(`สรุป: ถูก ${ok}/${total}`); };
+</script>
+</body>
+</html>
