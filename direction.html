@@ -1,287 +1,395 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Direction Tap | เกมแตะตามทิศ</title>
-    <style>
-        /* Shared & Base Styles */
-        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap');
-        :root {
-            --color-blue: #007AFF;
-            --color-green: #34C759;
-            --color-red: #FF3B30;
-            --color-bg: #f0f0f0;
-            --font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-        }
-        body {
-            font-family: var(--font-family);
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            text-align: center;
-            background-color: var(--color-bg);
-        }
-        .settings-panel, .result-panel {
-            background-color: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            width: 90%;
-            text-align: left;
-        }
-        h2 { color: var(--color-blue); font-size: 2rem; margin-top: 0; text-align: center; }
-        label { display: block; margin-bottom: 15px; font-size: 1.2rem; font-weight: 700; }
-        select { width: 100%; padding: 10px; margin-top: 5px; border: 2px solid #ccc; border-radius: 8px; font-size: 1.1rem; box-sizing: border-box; }
-        .start-button, .home-button {
-            background-color: var(--color-green);
-            color: white;
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.8rem;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: all 0.15s;
-        }
-        .home-button { background-color: var(--color-blue); margin-top: 10px; font-size: 1.4rem; }
-        .start-button:active, .home-button:active { transform: translateY(2px); }
-
-        /* Game Area */
-        #gameArea {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: white;
-            color: #333;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-        #arrowDisplay {
-            font-size: 15vw; /* ใหญ่มาก */
-            margin-bottom: 50px;
-            transform: rotate(0deg);
-            transition: transform 0.3s ease-out;
-            font-weight: 900;
-            color: #333;
-        }
-        .direction-buttons {
-            display: grid;
-            grid-template-areas: ". up ." "left center right" ". down .";
-            width: 90vw;
-            max-width: 500px;
-            gap: 10px;
-        }
-        .dir-button {
-            background-color: var(--color-blue);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            font-size: 2rem;
-            font-weight: 700;
-            cursor: pointer;
-            user-select: none;
-            transition: all 0.1s;
-            line-height: 1;
-        }
-        .dir-button:active {
-            opacity: 0.8;
-            transform: scale(0.98);
-        }
-        #btnUp { grid-area: up; }
-        #btnDown { grid-area: down; }
-        #btnLeft { grid-area: left; }
-        #btnRight { grid-area: right; }
-        
-        .score-display {
-            position: fixed;
-            top: 20px;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-size: 1.2rem;
-            z-index: 10;
-        }
-        .result-panel .correct { color: var(--color-green); font-size: 2rem; }
-        .result-panel .miss { color: var(--color-red); font-size: 2rem; }
-    </style>
-    <script src="shared.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>🧭 Direction Tap</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Sarabun', -apple-system, sans-serif;
+  background: linear-gradient(135deg, #FD297B 0%, #FF655B 100%);
+  min-height: 100vh;
+  color: white;
+  -webkit-tap-highlight-color: transparent;
+  overflow: hidden;
+}
+.setup-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+.game-screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  position: relative;
+}
+.back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  color: white;
+  font-size: 1.1rem;
+  cursor: pointer;
+  z-index: 100;
+}
+h1 { font-size: 2.5rem; margin-bottom: 30px; }
+.settings {
+  background: rgba(255,255,255,0.95);
+  border-radius: 20px;
+  padding: 30px;
+  max-width: 400px;
+  width: 100%;
+  color: #333;
+}
+.setting-group {
+  margin-bottom: 20px;
+}
+.setting-group label {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.mode-options {
+  display: flex;
+  gap: 10px;
+}
+.mode-btn {
+  flex: 1;
+  padding: 15px;
+  border: 3px solid #ddd;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.mode-btn.selected {
+  border-color: #007AFF;
+  background: #E3F2FD;
+  color: #007AFF;
+}
+input[type="range"] {
+  width: 100%;
+  height: 8px;
+  border-radius: 5px;
+  background: #ddd;
+  outline: none;
+  -webkit-appearance: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #007AFF;
+  cursor: pointer;
+}
+.range-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #007AFF;
+  margin-top: 8px;
+}
+.btn {
+  width: 100%;
+  padding: 18px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  background: #007AFF;
+  color: white;
+  margin-top: 10px;
+}
+.btn:active { transform: scale(0.95); }
+.score-display {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255,255,255,0.9);
+  padding: 15px 25px;
+  border-radius: 15px;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #333;
+}
+.arrow-display {
+  font-size: 10rem;
+  margin: 40px 0;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  animation: arrowPulse 0.5s ease;
+}
+@keyframes arrowPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+.status-text {
+  font-size: 1.5rem;
+  margin: 20px 0;
+  min-height: 2em;
+}
+.direction-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  max-width: 350px;
+  width: 100%;
+  margin-top: 30px;
+}
+.dir-btn {
+  aspect-ratio: 1;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+  border: none;
+  border-radius: 15px;
+  font-size: 3rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.dir-btn:active {
+  transform: scale(0.9);
+  background: rgba(255,255,255,0.4);
+}
+.dir-btn:nth-child(2) { grid-column: 2; }
+.dir-btn:nth-child(3) { grid-column: 1; grid-row: 2; }
+.dir-btn:nth-child(4) { grid-column: 3; grid-row: 2; }
+.dir-btn:nth-child(5) { grid-column: 2; grid-row: 3; }
+.result-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0,0,0,0.9);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+.result-content {
+  text-align: center;
+  max-width: 400px;
+}
+.result-content h2 {
+  font-size: 2.5rem;
+  margin-bottom: 30px;
+}
+.result-stats {
+  background: rgba(255,255,255,0.1);
+  border-radius: 15px;
+  padding: 25px;
+  margin: 20px 0;
+  font-size: 1.3rem;
+}
+.result-stats div {
+  margin: 15px 0;
+}
+</style>
 </head>
 <body>
-    <div class="settings-panel" id="settingsPanel">
-        <button class="home-button" onclick="goTo('index.html')">🏠 กลับหน้าหลัก</button>
-        <h2>🧭 Direction Tap Setup</h2>
-        
-        <label for="mode">โหมดเกม:</label>
-        <select id="mode">
-            <option value="straight">ตรงไปตรงมา (ภาพ = คำสั่ง)</option>
-            <option value="stroop">หลอกสมอง (แตะตามเสียง!)</option>
-        </select>
 
-        <label for="rounds">จำนวนรอบที่เล่น:</label>
-        <input type="number" id="rounds" value="20" min="5" max="50">
-        
-        <button class="start-button" onclick="startGame()">เริ่มเกม</button>
+<div class="setup-screen">
+  <button class="back-btn" onclick="window.location.href='index.html'">← กลับ</button>
+  <h1>🧭 Direction Tap</h1>
+  <div class="settings">
+    <div class="setting-group">
+      <label>โหมดเกม</label>
+      <div class="mode-options">
+        <button class="mode-btn selected" data-mode="normal" onclick="selectMode('normal')">
+          ตรงไปตรงมา
+        </button>
+        <button class="mode-btn" data-mode="trick" onclick="selectMode('trick')">
+          หลอกสมอง
+        </button>
+      </div>
     </div>
-
-    <div id="gameArea">
-        <div class="score-display">
-            ถูกต้อง: <span id="correctScore">0</span> | ผิด: <span id="missScore">0</span> | รอบที่ <span id="currentRound">0</span>
-        </div>
-        <div id="arrowDisplay"></div>
-        <div class="direction-buttons">
-            <div class="dir-button" id="btnUp" data-dir="up">⬆️</div>
-            <div class="dir-button" id="btnLeft" data-dir="left">⬅️</div>
-            <div class="dir-button" id="btnRight" data-dir="right">➡️</div>
-            <div class="dir-button" id="btnDown" data-dir="down">⬇️</div>
-        </div>
+    <div class="setting-group">
+      <label>จำนวนรอบ</label>
+      <input type="range" id="roundsRange" min="5" max="20" value="10">
+      <div class="range-value"><span id="roundsValue">10</span> รอบ</div>
     </div>
+    <button class="btn" onclick="startGame()">เริ่มเกม</button>
+  </div>
+</div>
 
-    <div class="result-panel" id="resultPanel" style="display: none;">
-        <h2>สรุปผลการฝึก</h2>
-        <p>ถูกต้อง: <span id="finalCorrect" class="correct"></span></p>
-        <p>ผิดพลาด: <span id="finalMiss" class="miss"></span></p>
-        <button class="start-button" onclick="window.location.reload()">เล่นใหม่อีกครั้ง</button>
-        <button class="home-button" onclick="goTo('index.html')">🏠 กลับหน้าหลัก</button>
-    </div>
+<div class="game-screen" id="gameScreen">
+  <button class="back-btn" onclick="endGame()">✕ จบ</button>
+  <div class="score-display" id="scoreDisplay">0 / 0</div>
+  <div class="status-text" id="statusText">เตรียมตัว...</div>
+  <div class="arrow-display" id="arrowDisplay">→</div>
+  <div class="direction-grid">
+    <button class="dir-btn" onclick="playerTap('บน')">↑</button>
+    <button class="dir-btn" onclick="playerTap('ซ้าย')">←</button>
+    <button class="dir-btn" onclick="playerTap('ขวา')">→</button>
+    <button class="dir-btn" onclick="playerTap('ล่าง')">↓</button>
+  </div>
+</div>
 
+<div class="result-screen" id="resultScreen">
+  <div class="result-content">
+    <h2>🎉 เสร็จสิ้น!</h2>
+    <div class="result-stats" id="resultStats"></div>
+    <button class="btn" onclick="window.location.href='index.html'">กลับหน้าหลัก</button>
+    <button class="btn" onclick="location.reload()" style="background:#34C759;margin-top:10px;">เล่นใหม่</button>
+  </div>
+</div>
+
+<script src="shared.js"></script>
 <script>
-    const DIRECTIONS = {
-        up: { text: 'ขึ้น', arrow: '↑', angle: 0 },
-        down: { text: 'ลง', arrow: '↓', angle: 180 },
-        left: { text: 'ซ้าย', arrow: '←', angle: -90 },
-        right: { text: 'ขวา', arrow: '→', angle: 90 }
-    };
-    let totalRounds = 0;
-    let currentRound = 0;
-    let correctCount = 0;
-    let missCount = 0;
-    let isGameRunning = false;
-    let gameMode = 'straight';
-    let currentCommand = ''; // ทิศทางที่ต้องตอบสนอง (จากเสียง)
-    let currentArrow = ''; // ทิศทางของลูกศรที่เห็น
+const directions = [
+  { name: 'บน', arrow: '↑', voice: 'บน' },
+  { name: 'ล่าง', arrow: '↓', voice: 'ล่าง' },
+  { name: 'ซ้าย', arrow: '←', voice: 'ซ้าย' },
+  { name: 'ขวา', arrow: '→', voice: 'ขวา' }
+];
 
-    function getRandomDirectionKey() {
-        const keys = Object.keys(DIRECTIONS);
-        return keys[Math.floor(Math.random() * keys.length)];
+let gameMode = 'normal';
+let totalRounds, currentRound = 0;
+let correct = 0, wrong = 0;
+let currentAnswer = '';
+let canAnswer = false;
+
+document.getElementById('roundsRange').addEventListener('input', function() {
+  document.getElementById('roundsValue').textContent = this.value;
+});
+
+function selectMode(mode) {
+  gameMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.classList.remove('selected');
+  });
+  document.querySelector(`[data-mode="${mode}"]`).classList.add('selected');
+}
+
+function startGame() {
+  totalRounds = parseInt(document.getElementById('roundsRange').value);
+  currentRound = 0;
+  correct = 0;
+  wrong = 0;
+  
+  document.querySelector('.setup-screen').style.display = 'none';
+  document.getElementById('gameScreen').style.display = 'flex';
+  
+  countdownOverlay(3, () => {
+    nextRound();
+  });
+}
+
+function nextRound() {
+  if (currentRound >= totalRounds) {
+    showResults();
+    return;
+  }
+  
+  currentRound++;
+  canAnswer = false;
+  updateScore();
+  
+  document.getElementById('statusText').textContent = '👀 ดูและฟัง';
+  
+  setTimeout(() => {
+    showDirection();
+  }, 500);
+}
+
+function showDirection() {
+  const dir = directions[Math.floor(Math.random() * directions.length)];
+  
+  if (gameMode === 'normal') {
+    // ตรงไปตรงมา - ภาพและเสียงตรงกัน
+    currentAnswer = dir.name;
+    document.getElementById('arrowDisplay').textContent = dir.arrow;
+    speak(dir.voice);
+  } else {
+    // หลอกสมอง - ภาพและเสียงไม่ตรงกัน
+    const visualDir = dir;
+    let audioDir = directions[Math.floor(Math.random() * directions.length)];
+    
+    // ให้เสียงไม่ตรงกับภาพ
+    while (audioDir.name === visualDir.name) {
+      audioDir = directions[Math.floor(Math.random() * directions.length)];
     }
+    
+    currentAnswer = audioDir.name; // ตอบตามเสียง
+    document.getElementById('arrowDisplay').textContent = visualDir.arrow;
+    speak(audioDir.voice);
+    document.getElementById('statusText').textContent = '🎯 แตะตามเสียง!';
+  }
+  
+  beep(600, 150);
+  document.getElementById('arrowDisplay').style.animation = 'none';
+  setTimeout(() => {
+    document.getElementById('arrowDisplay').style.animation = 'arrowPulse 0.5s ease';
+  }, 10);
+  
+  canAnswer = true;
+}
 
-    function generateRound() {
-        if (currentRound >= totalRounds) {
-            endGame();
-            return;
-        }
+function playerTap(direction) {
+  if (!canAnswer) return;
+  
+  canAnswer = false;
+  
+  if (direction === currentAnswer) {
+    correct++;
+    document.getElementById('statusText').textContent = '✅ ถูกต้อง!';
+    beep(1000, 150);
+  } else {
+    wrong++;
+    document.getElementById('statusText').textContent = '❌ ผิด!';
+    beep(300, 300);
+  }
+  
+  updateScore();
+  
+  setTimeout(() => {
+    nextRound();
+  }, 1000);
+}
 
-        currentRound++;
-        isGameRunning = false; // ป้องกันการแตะซ้ำซ้อนระหว่างรอ
+function updateScore() {
+  document.getElementById('scoreDisplay').textContent = `${correct} / ${currentRound}`;
+}
 
-        let commandKey = getRandomDirectionKey();
-        let arrowKey = commandKey; 
+function showResults() {
+  const accuracy = totalRounds > 0 ? Math.round((correct / totalRounds) * 100) : 0;
+  
+  document.getElementById('resultStats').innerHTML = `
+    <div>✅ ถูกต้อง: <strong>${correct}</strong></div>
+    <div>❌ ผิด: <strong>${wrong}</strong></div>
+    <div>🎯 ความแม่นยำ: <strong>${accuracy}%</strong></div>
+    <div style="margin-top:20px;font-size:1.1rem;opacity:0.8;">
+      โหมด: ${gameMode === 'normal' ? 'ตรงไปตรงมา' : 'หลอกสมอง'}
+    </div>
+  `;
+  
+  document.getElementById('resultScreen').style.display = 'flex';
+  toast('ฝึกเสร็จแล้ว!', 3000);
+}
 
-        if (gameMode === 'stroop') {
-            // โหมดหลอกสมอง: 50% ภาพกับเสียงไม่ตรงกัน
-            if (Math.random() < 0.5) {
-                // หลอก! ให้ภาพไม่ตรงกับเสียง
-                do {
-                    arrowKey = getRandomDirectionKey();
-                } while (arrowKey === commandKey);
-            }
-        }
-
-        currentCommand = commandKey;
-        currentArrow = arrowKey;
-
-        // Display Arrow
-        const arrowEl = document.getElementById('arrowDisplay');
-        arrowEl.textContent = DIRECTIONS[arrowKey].arrow;
-        // arrowEl.style.transform = `rotate(${DIRECTIONS[arrowKey].angle}deg)`;
-
-        // Speak Command
-        setTimeout(() => {
-            speak(DIRECTIONS[commandKey].text);
-            isGameRunning = true; // เปิดรับ input หลังเสียงพูด
-        }, 500); // หน่วงเวลาให้ผู้เล่นดูภาพก่อนมีคำสั่งเสียง
-        
-        updateScore();
-    }
-
-    function updateScore() {
-        document.getElementById('correctScore').textContent = correctCount;
-        document.getElementById('missScore').textContent = missCount;
-        document.getElementById('currentRound').textContent = currentRound;
-    }
-
-    function handleTap(event) {
-        if (!isGameRunning) return;
-        
-        const tappedDir = event.currentTarget.dataset.dir;
-
-        if (tappedDir === currentCommand) {
-            // ถูกต้อง
-            correctCount++;
-            toast('✅ ถูกต้อง!');
-        } else {
-            // ผิด
-            missCount++;
-            toast('❌ ผิดพลาด!');
-            beep(1);
-        }
-        
-        // จบรอบแล้วไปรอบต่อไปทันที
-        generateRound();
-    }
-
-    function endGame() {
-        isGameRunning = false;
-        beep(2);
-        document.getElementById('gameArea').style.display = 'none';
-        document.getElementById('finalCorrect').textContent = correctCount;
-        document.getElementById('finalMiss').textContent = missCount;
-        document.getElementById('resultPanel').style.display = 'block';
-    }
-
-    function setupButtons() {
-        document.querySelectorAll('.dir-button').forEach(btn => {
-            btn.removeEventListener('touchstart', handleTap);
-            btn.removeEventListener('mousedown', handleTap);
-            btn.addEventListener('touchstart', handleTap, { passive: true });
-            btn.addEventListener('mousedown', handleTap);
-        });
-    }
-
-    function startGame() {
-        totalRounds = parseInt(document.getElementById('rounds').value);
-        gameMode = document.getElementById('mode').value;
-        if (isNaN(totalRounds) || totalRounds < 1) {
-            toast('จำนวนรอบต้องเป็นตัวเลขและมากกว่า 0');
-            return;
-        }
-
-        // Reset
-        currentRound = 0;
-        correctCount = 0;
-        missCount = 0;
-        
-        document.getElementById('settingsPanel').style.display = 'none';
-        document.getElementById('gameArea').style.display = 'flex';
-        setupButtons();
-
-        countdownOverlay(3, () => {
-            generateRound(); // เริ่มรอบแรก
-        });
-    }
-
+function endGame() {
+  showResults();
+}
 </script>
+
 </body>
 </html>
