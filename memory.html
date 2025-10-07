@@ -1,253 +1,279 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<title>🧠 Memory Pattern</title>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-  font-family: 'Sarabun', -apple-system, sans-serif;
-  background: linear-gradient(135deg, #8E2DE2 0%, #4A00E0 100%);
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  -webkit-tap-highlight-color: transparent;
-  overflow: hidden;
-}
-.container {
-  text-align: center;
-  padding: 20px;
-  max-width: 500px;
-  width: 100%;
-}
-.back-btn {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  background: rgba(255,255,255,0.2);
-  backdrop-filter: blur(10px);
-  border: none;
-  padding: 12px 20px;
-  border-radius: 10px;
-  color: white;
-  font-size: 1.1rem;
-  cursor: pointer;
-}
-h1 { font-size: 2.5rem; margin-bottom: 20px; }
-.level-display {
-  font-size: 1.5rem;
-  margin: 20px 0;
-  background: rgba(255,255,255,0.15);
-  backdrop-filter: blur(10px);
-  padding: 15px;
-  border-radius: 12px;
-}
-.status-text {
-  font-size: 1.8rem;
-  font-weight: bold;
-  margin: 20px 0;
-  min-height: 2em;
-}
-.color-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-  max-width: 350px;
-  margin: 30px auto;
-}
-.color-box {
-  aspect-ratio: 1;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: all 0.2s;
-  border: 4px solid rgba(255,255,255,0.3);
-  position: relative;
-  overflow: hidden;
-}
-.color-box:active {
-  transform: scale(0.9);
-}
-.color-box.flash {
-  border-color: white;
-  box-shadow: 0 0 30px rgba(255,255,255,0.8);
-}
-.color-box.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-.btn {
-  padding: 18px 40px;
-  font-size: 1.3rem;
-  font-weight: 600;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  margin: 10px;
-  transition: all 0.2s;
-}
-.btn-primary {
-  background: white;
-  color: #8E2DE2;
-}
-.btn-secondary {
-  background: rgba(255,255,255,0.2);
-  color: white;
-}
-.btn:active { transform: scale(0.95); }
-.result-screen {
-  display: none;
-  background: rgba(255,255,255,0.15);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 30px;
-  margin-top: 20px;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>🧠 Memory Pattern</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      font-family: 'Sarabun', -apple-system, system-ui, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: white;
+    }
+    .container {
+      width: 100%;
+      max-width: 500px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .header h1 {
+      font-size: 2.2em;
+      margin-bottom: 10px;
+    }
+    .info-box {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .level-display {
+      font-size: 2em;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .instruction {
+      font-size: 1.1em;
+      opacity: 0.9;
+    }
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+    .color-btn {
+      aspect-ratio: 1;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    .color-btn:active {
+      transform: scale(0.95);
+    }
+    .color-btn.active {
+      transform: scale(1.15);
+      box-shadow: 0 0 30px currentColor, 0 0 60px currentColor;
+      filter: brightness(1.5);
+    }
+    .color-btn.red {
+      background: #FF3B30;
+    }
+    .color-btn.yellow {
+      background: #FFCC00;
+    }
+    .color-btn.green {
+      background: #34C759;
+    }
+    .color-btn.blue {
+      background: #007AFF;
+    }
+    .color-btn.disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    .btn {
+      width: 100%;
+      padding: 18px;
+      font-size: 1.3em;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 10px;
+    }
+    .btn-primary {
+      background: white;
+      color: #667eea;
+    }
+    .btn-primary:active {
+      transform: scale(0.95);
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      backdrop-filter: blur(10px);
+    }
+  </style>
+  <style id="shared-styles"></style>
+  <script src="shared.js"></script>
 </head>
 <body>
+  <div class="container">
+    <div class="header">
+      <h1>🧠 Memory Pattern</h1>
+      <p>ฝึกความจำลำดับสี</p>
+    </div>
 
-<button class="back-btn" onclick="window.location.href='index.html'">← กลับ</button>
+    <div class="info-box">
+      <div class="level-display" id="levelDisplay">ระดับ 1</div>
+      <div class="instruction" id="instruction">กดเริ่มเกมเพื่อเล่น</div>
+    </div>
 
-<div class="container">
-  <h1>🧠 Memory Pattern</h1>
-  
-  <div class="level-display">ระดับ: <span id="levelNum">1</span></div>
-  <div class="status-text" id="statusText">พร้อมเริ่มเกม</div>
-  
-  <div class="color-grid">
-    <div class="color-box" data-color="0" style="background:#FF3B30;" onclick="playerTap(0)"></div>
-    <div class="color-box" data-color="1" style="background:#34C759;" onclick="playerTap(1)"></div>
-    <div class="color-box" data-color="2" style="background:#007AFF;" onclick="playerTap(2)"></div>
-    <div class="color-box" data-color="3" style="background:#FFCC00;" onclick="playerTap(3)"></div>
+    <div class="color-grid">
+      <button class="color-btn red disabled" id="red" onclick="playerTap('red')"></button>
+      <button class="color-btn yellow disabled" id="yellow" onclick="playerTap('yellow')"></button>
+      <button class="color-btn green disabled" id="green" onclick="playerTap('green')"></button>
+      <button class="color-btn blue disabled" id="blue" onclick="playerTap('blue')"></button>
+    </div>
+
+    <button class="btn btn-primary" id="startBtn" onclick="startGame()">🚀 เริ่มเกม</button>
+    <button class="btn btn-secondary" onclick="location.href='index.html'">← กลับหน้าหลัก</button>
   </div>
-  
-  <button class="btn btn-primary" id="startBtn" onclick="startGame()">เริ่มเกม</button>
-  
-  <div class="result-screen" id="resultScreen">
-    <h2 style="font-size:2rem;margin-bottom:20px;">🎉 เกมจบ!</h2>
-    <p style="font-size:1.5rem;margin:15px 0;">จำได้ถึงระดับ: <strong id="finalLevel">0</strong></p>
-    <button class="btn btn-primary" onclick="location.reload()">เล่นใหม่</button>
-  </div>
-</div>
 
-<script src="shared.js"></script>
-<script>
-const colorNames = ['แดง', 'เขียว', 'น้ำเงิน', 'เหลือง'];
-let sequence = [];
-let playerSequence = [];
-let level = 1;
-let isShowingSequence = false;
-let canPlay = false;
+  <script>
+    const colors = ['red', 'yellow', 'green', 'blue'];
+    const colorNames = {
+      red: 'แดง',
+      yellow: 'เหลือง',
+      green: 'เขียว',
+      blue: 'น้ำเงิน'
+    };
+    const colorFreq = {
+      red: 400,
+      yellow: 500,
+      green: 600,
+      blue: 700
+    };
 
-function startGame() {
-  document.getElementById('startBtn').style.display = 'none';
-  document.getElementById('resultScreen').style.display = 'none';
-  sequence = [];
-  level = 1;
-  document.getElementById('levelNum').textContent = level;
-  
-  countdownOverlay(3, () => {
-    nextRound();
-  });
-}
+    let sequence = [];
+    let playerSequence = [];
+    let level = 1;
+    let gameActive = false;
+    let showingSequence = false;
 
-function nextRound() {
-  canPlay = false;
-  playerSequence = [];
-  sequence.push(Math.floor(Math.random() * 4));
-  
-  document.getElementById('statusText').textContent = '👀 จำลำดับ';
-  disableBoxes(true);
-  
-  setTimeout(() => {
-    showSequence();
-  }, 1000);
-}
+    async function startGame() {
+      document.getElementById('startBtn').style.display = 'none';
+      sequence = [];
+      level = 1;
+      gameActive = true;
 
-function showSequence() {
-  isShowingSequence = true;
-  let index = 0;
-  
-  const interval = setInterval(() => {
-    if (index >= sequence.length) {
-      clearInterval(interval);
-      isShowingSequence = false;
-      canPlay = true;
-      document.getElementById('statusText').textContent = '👆 กดตามลำดับ';
-      disableBoxes(false);
-      return;
-    }
-    
-    const colorIndex = sequence[index];
-    flashColor(colorIndex);
-    index++;
-  }, 800);
-}
-
-function flashColor(colorIndex) {
-  const box = document.querySelector(`[data-color="${colorIndex}"]`);
-  box.classList.add('flash');
-  beep(400 + colorIndex * 200, 300);
-  
-  setTimeout(() => {
-    box.classList.remove('flash');
-  }, 400);
-}
-
-function playerTap(colorIndex) {
-  if (!canPlay || isShowingSequence) return;
-  
-  playerSequence.push(colorIndex);
-  flashColor(colorIndex);
-  
-  const currentIndex = playerSequence.length - 1;
-  
-  if (playerSequence[currentIndex] !== sequence[currentIndex]) {
-    // ผิด
-    gameOver();
-    return;
-  }
-  
-  if (playerSequence.length === sequence.length) {
-    // ถูกครบ
-    canPlay = false;
-    level++;
-    document.getElementById('levelNum').textContent = level;
-    document.getElementById('statusText').textContent = '✅ ถูกต้อง!';
-    
-    setTimeout(() => {
+      await countdownOverlay(3);
       nextRound();
-    }, 1500);
-  }
-}
-
-function gameOver() {
-  canPlay = false;
-  document.getElementById('statusText').textContent = '❌ ผิดพลาด!';
-  disableBoxes(true);
-  
-  setTimeout(() => {
-    document.getElementById('finalLevel').textContent = level;
-    document.getElementById('resultScreen').style.display = 'block';
-    toast('ฝึกเสร็จแล้ว!', 3000);
-  }, 1500);
-}
-
-function disableBoxes(disabled) {
-  document.querySelectorAll('.color-box').forEach(box => {
-    if (disabled) {
-      box.classList.add('disabled');
-    } else {
-      box.classList.remove('disabled');
     }
-  });
-}
-</script>
 
+    async function nextRound() {
+      playerSequence = [];
+      sequence.push(colors[Math.floor(Math.random() * colors.length)]);
+      
+      document.getElementById('levelDisplay').textContent = `ระดับ ${level}`;
+      document.getElementById('instruction').textContent = 'จดจำลำดับสี...';
+      
+      disableButtons();
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      await showSequence();
+      
+      document.getElementById('instruction').textContent = 'แตะตามลำดับที่เห็น!';
+      enableButtons();
+    }
+
+    async function showSequence() {
+      showingSequence = true;
+      
+      for (let i = 0; i < sequence.length; i++) {
+        await new Promise(resolve => setTimeout(resolve, 300));
+        await flashColor(sequence[i]);
+      }
+      
+      showingSequence = false;
+    }
+
+    function flashColor(color) {
+      return new Promise(resolve => {
+        const btn = document.getElementById(color);
+        btn.classList.add('active');
+        
+        beep(colorFreq[color], 400);
+        speak(colorNames[color]);
+        
+        setTimeout(() => {
+          btn.classList.remove('active');
+          resolve();
+        }, 700);
+      });
+    }
+
+    function playerTap(color) {
+      if (showingSequence || !gameActive) return;
+      
+      playerSequence.push(color);
+      
+      const btn = document.getElementById(color);
+      btn.classList.add('active');
+      beep(colorFreq[color], 200);
+      
+      setTimeout(() => {
+        btn.classList.remove('active');
+      }, 300);
+      
+      checkSequence();
+    }
+
+    function checkSequence() {
+      const currentIndex = playerSequence.length - 1;
+      
+      if (playerSequence[currentIndex] !== sequence[currentIndex]) {
+        gameOver();
+        return;
+      }
+      
+      if (playerSequence.length === sequence.length) {
+        level++;
+        toast('✅ ถูกต้อง!', 1500);
+        setTimeout(() => nextRound(), 2000);
+      }
+    }
+
+    function gameOver() {
+      gameActive = false;
+      disableButtons();
+      
+      document.getElementById('instruction').textContent = `ผิดพลาด! คุณเล่นได้ ${level} ระดับ`;
+      
+      toast('❌ ผิดพลาด!', 2000);
+      beep(200, 500);
+      
+      setTimeout(() => {
+        document.getElementById('startBtn').style.display = 'block';
+        document.getElementById('startBtn').textContent = 'เล่นอีกครั้ง';
+        document.getElementById('instruction').textContent = 'กดเริ่มเกมใหม่';
+      }, 2500);
+    }
+
+    function disableButtons() {
+      colors.forEach(color => {
+        document.getElementById(color).classList.add('disabled');
+      });
+    }
+
+    function enableButtons() {
+      colors.forEach(color => {
+        document.getElementById(color).classList.remove('disabled');
+      });
+    }
+  </script>
+  <script>
+    document.getElementById('shared-styles').textContent = sharedStyles;
+  </script>
 </body>
 </html>
