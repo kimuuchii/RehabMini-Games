@@ -1,296 +1,398 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<title>🟢 Follow the Dot</title>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-  font-family: 'Sarabun', -apple-system, sans-serif;
-  background: linear-gradient(135deg, #FA8BFF 0%, #2BD2FF 100%);
-  -webkit-tap-highlight-color: transparent;
-  overflow: hidden;
-  height: 100vh;
-}
-.setup-screen {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 20px;
-  color: white;
-}
-.game-screen {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  display: none;
-}
-.back-btn {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  background: rgba(255,255,255,0.2);
-  backdrop-filter: blur(10px);
-  border: none;
-  padding: 12px 20px;
-  border-radius: 10px;
-  color: white;
-  font-size: 1.1rem;
-  cursor: pointer;
-  z-index: 100;
-}
-h1 { font-size: 2.5rem; margin-bottom: 30px; }
-.settings {
-  background: rgba(255,255,255,0.95);
-  border-radius: 20px;
-  padding: 30px;
-  max-width: 400px;
-  width: 100%;
-  color: #333;
-}
-.setting-group {
-  margin-bottom: 20px;
-}
-.setting-group label {
-  display: block;
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin-bottom: 10px;
-}
-input[type="range"] {
-  width: 100%;
-  height: 8px;
-  border-radius: 5px;
-  background: #ddd;
-  outline: none;
-  -webkit-appearance: none;
-}
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: #007AFF;
-  cursor: pointer;
-}
-.range-value {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #007AFF;
-  margin-top: 8px;
-}
-.btn {
-  width: 100%;
-  padding: 18px;
-  font-size: 1.3rem;
-  font-weight: 600;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  background: #007AFF;
-  color: white;
-  margin-top: 10px;
-}
-.btn:active { transform: scale(0.95); }
-.score-bar {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: rgba(255,255,255,0.9);
-  padding: 15px 25px;
-  border-radius: 15px;
-  font-size: 1.3rem;
-  font-weight: bold;
-  color: #333;
-  z-index: 100;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
-.dot {
-  position: absolute;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: transform 0.1s;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  animation: appear 0.3s ease;
-}
-.dot:active {
-  transform: scale(0.9);
-}
-@keyframes appear {
-  from { transform: scale(0); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-.result-screen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  background: rgba(0,0,0,0.9);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 200;
-  color: white;
-  text-align: center;
-  padding: 20px;
-}
-.result-content {
-  max-width: 400px;
-}
-.result-content h2 {
-  font-size: 2.5rem;
-  margin-bottom: 30px;
-}
-.result-stats {
-  background: rgba(255,255,255,0.1);
-  border-radius: 15px;
-  padding: 25px;
-  margin: 20px 0;
-  font-size: 1.3rem;
-}
-.result-stats div {
-  margin: 15px 0;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>🟢 Follow the Dot</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      font-family: 'Sarabun', -apple-system, system-ui, sans-serif;
+      overflow: hidden;
+    }
+    .setup-screen {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    .game-screen {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      transition: background-color 0.3s ease;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .header h1 {
+      font-size: 2.2em;
+      margin-bottom: 10px;
+    }
+    .section {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 15px;
+      color: #333;
+    }
+    .section-title {
+      font-size: 1.2em;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #667eea;
+    }
+    .slider-group {
+      margin-bottom: 20px;
+    }
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 1em;
+    }
+    .slider {
+      width: 100%;
+      height: 40px;
+      -webkit-appearance: none;
+      background: #e0e0e0;
+      border-radius: 20px;
+      outline: none;
+    }
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 30px;
+      height: 30px;
+      background: #667eea;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .bg-select {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+    .bg-option {
+      flex: 1;
+      padding: 20px;
+      border-radius: 12px;
+      border: 3px solid transparent;
+      cursor: pointer;
+      text-align: center;
+      font-size: 1.1em;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    .bg-option.dark {
+      background: #1a1a1a;
+      color: white;
+    }
+    .bg-option.light {
+      background: #f5f5f5;
+      color: #333;
+    }
+    .bg-option.selected {
+      border-color: #34C759;
+      box-shadow: 0 0 0 3px rgba(52, 199, 89, 0.2);
+    }
+    .btn {
+      width: 100%;
+      padding: 18px;
+      font-size: 1.3em;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .btn-primary {
+      background: #34C759;
+      color: white;
+      box-shadow: 0 4px 15px rgba(52, 199, 89, 0.3);
+    }
+    .btn-primary:active {
+      transform: scale(0.95);
+    }
+    .btn-secondary {
+      background: white;
+      color: #667eea;
+      margin-top: 10px;
+    }
+    .dot {
+      position: absolute;
+      width: 70px;
+      height: 70px;
+      background: #FF3B30;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(255, 59, 48, 0.5);
+      animation: appear 0.3s ease;
+      display: none;
+    }
+    @keyframes appear {
+      from {
+        transform: scale(0);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    .score-display {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 15px 30px;
+      border-radius: 20px;
+      font-size: 1.3em;
+      font-weight: 600;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+    .result-screen {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.95);
+      color: white;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 200;
+    }
+    .result-box {
+      text-align: center;
+      max-width: 400px;
+    }
+    .result-icon {
+      font-size: 5em;
+      margin-bottom: 20px;
+    }
+    .result-title {
+      font-size: 2em;
+      font-weight: bold;
+      margin-bottom: 30px;
+    }
+    .result-stats {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 25px;
+      margin-bottom: 30px;
+    }
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 1.3em;
+      margin-bottom: 15px;
+    }
+    .stat-value {
+      font-weight: bold;
+      color: #34C759;
+    }
+  </style>
+  <style id="shared-styles"></style>
+  <script src="shared.js"></script>
 </head>
 <body>
-
-<div class="setup-screen">
-  <button class="back-btn" onclick="window.location.href='index.html'">← กลับ</button>
-  <h1>🟢 Follow the Dot</h1>
-  <div class="settings">
-    <div class="setting-group">
-      <label>จำนวนจุด</label>
-      <input type="range" id="dotsRange" min="5" max="30" value="10">
-      <div class="range-value"><span id="dotsValue">10</span> จุด</div>
+  <div class="setup-screen">
+    <div class="header">
+      <h1>🟢 Follow the Dot</h1>
+      <p>ฝึกประสานมือ-ตา</p>
     </div>
-    <div class="setting-group">
-      <label>เวลาต่อจุด</label>
-      <input type="range" id="timeRange" min="1" max="5" value="2" step="0.5">
-      <div class="range-value"><span id="timeValue">2</span> วินาที</div>
+
+    <div class="section">
+      <div class="section-title">ตั้งค่าเกม</div>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>จำนวนจุด</span>
+          <span id="dotsValue">10 จุด</span>
+        </div>
+        <input type="range" class="slider" id="dotsSlider" min="5" max="30" value="10">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>เวลาจุดปรากฏ</span>
+          <span id="durationValue">800 ms</span>
+        </div>
+        <input type="range" class="slider" id="durationSlider" min="500" max="2000" step="100" value="800">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>ช่วงพักระหว่างจุด</span>
+          <span id="delayValue">500 ms</span>
+        </div>
+        <input type="range" class="slider" id="delaySlider" min="300" max="1000" step="50" value="500">
+      </div>
     </div>
-    <button class="btn" onclick="startGame()">เริ่มเกม</button>
+
+    <div class="section">
+      <div class="section-title">เลือกพื้นหลัง</div>
+      <div class="bg-select">
+        <div class="bg-option dark selected" onclick="selectBg('dark')">
+          🌙 ดำ
+        </div>
+        <div class="bg-option light" onclick="selectBg('light')">
+          ☀️ ขาว
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="startGame()">🚀 เริ่มเกม</button>
+    <button class="btn btn-secondary" onclick="location.href='index.html'">← กลับหน้าหลัก</button>
   </div>
-</div>
 
-<div class="game-screen" id="gameScreen">
-  <button class="back-btn" onclick="endGame()">✕ จบ</button>
-  <div class="score-bar" id="scoreBar">0 / 0</div>
-</div>
-
-<div class="result-screen" id="resultScreen">
-  <div class="result-content">
-    <h2>🎉 เสร็จสิ้น!</h2>
-    <div class="result-stats" id="resultStats"></div>
-    <button class="btn" onclick="window.location.href='index.html'">กลับหน้าหลัก</button>
-    <button class="btn" onclick="location.reload()" style="background:#34C759;margin-top:10px;">เล่นใหม่</button>
+  <div class="game-screen" id="gameScreen">
+    <div class="score-display" id="scoreDisplay">0 / 0</div>
+    <div class="dot" id="dot"></div>
   </div>
-</div>
 
-<script src="shared.js"></script>
-<script>
-let totalDots, dotTime;
-let score = 0, miss = 0, current = 0;
-let dotTimeout;
+  <div class="result-screen" id="resultScreen">
+    <div class="result-box">
+      <div class="result-icon">🎯</div>
+      <div class="result-title">เกมจบแล้ว!</div>
+      <div class="result-stats">
+        <div class="stat-row">
+          <span>แตะถูก:</span>
+          <span class="stat-value" id="hitCount">0</span>
+        </div>
+        <div class="stat-row">
+          <span>พลาด:</span>
+          <span class="stat-value" id="missCount">0</span>
+        </div>
+        <div class="stat-row">
+          <span>ความแม่นยำ:</span>
+          <span class="stat-value" id="accuracy">0%</span>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="location.reload()">เล่นอีกครั้ง</button>
+      <button class="btn btn-secondary" onclick="location.href='index.html'">กลับหน้าหลัก</button>
+    </div>
+  </div>
 
-document.getElementById('dotsRange').addEventListener('input', function() {
-  document.getElementById('dotsValue').textContent = this.value;
-});
+  <script>
+    let selectedBg = 'dark';
+    let totalDots, dotDuration, dotDelay;
+    let currentDot = 0;
+    let hits = 0;
+    let misses = 0;
+    let dotTimeout;
 
-document.getElementById('timeRange').addEventListener('input', function() {
-  document.getElementById('timeValue').textContent = this.value;
-});
+    // Sliders
+    document.getElementById('dotsSlider').oninput = function() {
+      document.getElementById('dotsValue').textContent = this.value + ' จุด';
+    };
+    document.getElementById('durationSlider').oninput = function() {
+      document.getElementById('durationValue').textContent = this.value + ' ms';
+    };
+    document.getElementById('delaySlider').oninput = function() {
+      document.getElementById('delayValue').textContent = this.value + ' ms';
+    };
 
-function startGame() {
-  totalDots = parseInt(document.getElementById('dotsRange').value);
-  dotTime = parseFloat(document.getElementById('timeRange').value) * 1000;
-  
-  document.querySelector('.setup-screen').style.display = 'none';
-  document.getElementById('gameScreen').style.display = 'block';
-  
-  countdownOverlay(3, () => {
-    spawnDot();
-  });
-}
-
-function spawnDot() {
-  if (current >= totalDots) {
-    showResults();
-    return;
-  }
-  
-  current++;
-  updateScore();
-  
-  const colors = ['#FF3B30', '#34C759', '#007AFF', '#FFCC00', '#AF52DE', '#FF9500'];
-  const color = colors[Math.floor(Math.random() * colors.length)];
-  
-  const dot = document.createElement('div');
-  dot.className = 'dot';
-  dot.style.backgroundColor = color;
-  
-  const maxX = window.innerWidth - 100;
-  const maxY = window.innerHeight - 150;
-  const x = 50 + Math.random() * maxX;
-  const y = 80 + Math.random() * maxY;
-  
-  dot.style.left = x + 'px';
-  dot.style.top = y + 'px';
-  
-  let tapped = false;
-  
-  dot.addEventListener('click', function() {
-    if (!tapped) {
-      tapped = true;
-      score++;
-      beep(1200, 100);
-      this.remove();
-      clearTimeout(dotTimeout);
-      setTimeout(spawnDot, 300);
+    function selectBg(type) {
+      selectedBg = type;
+      document.querySelectorAll('.bg-option').forEach(el => el.classList.remove('selected'));
+      document.querySelector('.bg-option.' + type).classList.add('selected');
     }
-  });
-  
-  document.getElementById('gameScreen').appendChild(dot);
-  
-  dotTimeout = setTimeout(() => {
-    if (!tapped) {
-      miss++;
-      dot.remove();
-      spawnDot();
+
+    async function startGame() {
+      totalDots = parseInt(document.getElementById('dotsSlider').value);
+      dotDuration = parseInt(document.getElementById('durationSlider').value);
+      dotDelay = parseInt(document.getElementById('delaySlider').value);
+
+      document.querySelector('.setup-screen').style.display = 'none';
+      const gameScreen = document.getElementById('gameScreen');
+      gameScreen.style.display = 'block';
+      gameScreen.style.backgroundColor = selectedBg === 'dark' ? '#1a1a1a' : '#ffffff';
+
+      await countdownOverlay(3);
+      showNextDot();
     }
-  }, dotTime);
-}
 
-function updateScore() {
-  document.getElementById('scoreBar').textContent = `${score} / ${current}`;
-}
+    function showNextDot() {
+      if (currentDot >= totalDots) {
+        endGame();
+        return;
+      }
 
-function showResults() {
-  const accuracy = totalDots > 0 ? Math.round((score / totalDots) * 100) : 0;
-  
-  document.getElementById('resultStats').innerHTML = `
-    <div>✅ แตะถูก: <strong>${score}</strong></div>
-    <div>❌ พลาด: <strong>${miss}</strong></div>
-    <div>🎯 ความแม่นยำ: <strong>${accuracy}%</strong></div>
-  `;
-  
-  document.getElementById('resultScreen').style.display = 'flex';
-  toast('ฝึกเสร็จแล้ว!', 3000);
-}
+      currentDot++;
+      updateScore();
 
-function endGame() {
-  clearTimeout(dotTimeout);
-  showResults();
-}
-</script>
+      setTimeout(() => {
+        const dot = document.getElementById('dot');
+        const gameScreen = document.getElementById('gameScreen');
+        
+        // Random position
+        const maxX = gameScreen.clientWidth - 70;
+        const maxY = gameScreen.clientHeight - 150;
+        const x = Math.random() * maxX;
+        const y = 80 + Math.random() * (maxY - 80);
+        
+        dot.style.left = x + 'px';
+        dot.style.top = y + 'px';
+        dot.style.display = 'block';
+        
+        beep();
+        
+        let dotHit = false;
+        dot.onclick = () => {
+          if (!dotHit) {
+            dotHit = true;
+            hits++;
+            clearTimeout(dotTimeout);
+            dot.style.display = 'none';
+            toast('✅ ถูกต้อง!', 800);
+            beep(800, 100);
+            showNextDot();
+          }
+        };
+        
+        dotTimeout = setTimeout(() => {
+          if (!dotHit) {
+            misses++;
+            dot.style.display = 'none';
+            toast('❌ พลาด!', 800);
+            showNextDot();
+          }
+        }, dotDuration);
+      }, dotDelay);
+    }
 
+    function updateScore() {
+      document.getElementById('scoreDisplay').textContent = `${currentDot} / ${totalDots}`;
+    }
+
+    function endGame() {
+      document.getElementById('hitCount').textContent = hits;
+      document.getElementById('missCount').textContent = misses;
+      const accuracy = totalDots > 0 ? Math.round((hits / totalDots) * 100) : 0;
+      document.getElementById('accuracy').textContent = accuracy + '%';
+      
+      document.getElementById('resultScreen').style.display = 'flex';
+      beep(600, 200);
+      setTimeout(() => beep(800, 200), 200);
+    }
+  </script>
+  <script>
+    document.getElementById('shared-styles').textContent = sharedStyles;
+  </script>
 </body>
 </html>
