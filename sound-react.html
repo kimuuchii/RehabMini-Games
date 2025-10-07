@@ -1,260 +1,233 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<title>🔊 Sound Reaction Game</title>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-  font-family: 'Sarabun', -apple-system, sans-serif;
-  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  -webkit-tap-highlight-color: transparent;
-  overflow: hidden;
-}
-.container {
-  text-align: center;
-  padding: 20px;
-  max-width: 500px;
-  width: 100%;
-}
-.back-btn {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  background: rgba(255,255,255,0.2);
-  backdrop-filter: blur(10px);
-  border: none;
-  padding: 12px 20px;
-  border-radius: 10px;
-  color: white;
-  font-size: 1.1rem;
-  cursor: pointer;
-}
-h1 { font-size: 2.5rem; margin-bottom: 20px; }
-.status {
-  font-size: 1.5rem;
-  margin: 30px 0;
-  min-height: 2em;
-  font-weight: 600;
-}
-.tap-area {
-  width: 100%;
-  aspect-ratio: 1;
-  max-width: 350px;
-  margin: 30px auto;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.2);
-  backdrop-filter: blur(10px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 4rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  border: 4px solid rgba(255,255,255,0.3);
-}
-.tap-area:active {
-  transform: scale(0.95);
-  background: rgba(255,255,255,0.3);
-}
-.tap-area.ready {
-  background: #34C759;
-  border-color: #2fb34f;
-  animation: pulse 0.5s ease infinite;
-}
-.results {
-  background: rgba(255,255,255,0.15);
-  backdrop-filter: blur(10px);
-  border-radius: 15px;
-  padding: 20px;
-  margin: 20px 0;
-  font-size: 1.2rem;
-}
-.result-item {
-  margin: 8px 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.result-value {
-  font-weight: bold;
-  font-size: 1.4rem;
-}
-.btn {
-  width: 100%;
-  max-width: 300px;
-  padding: 18px;
-  font-size: 1.3rem;
-  font-weight: 600;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  margin: 10px auto;
-  display: block;
-  transition: all 0.2s;
-}
-.btn-primary {
-  background: white;
-  color: #11998e;
-}
-.btn-secondary {
-  background: rgba(255,255,255,0.2);
-  color: white;
-}
-.btn:active {
-  transform: scale(0.95);
-}
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>🔊 Sound Reaction</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      font-family: 'Sarabun', -apple-system, system-ui, sans-serif;
+      background: #1a1a1a;
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      transition: background-color 0.3s ease;
+    }
+    body.ready {
+      background: #34C759;
+    }
+    .container {
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+    }
+    .header {
+      margin-bottom: 40px;
+    }
+    .header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+    .status-box {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 40px 30px;
+      margin-bottom: 30px;
+      min-height: 250px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .status-icon {
+      font-size: 5em;
+      margin-bottom: 20px;
+      animation: pulse 2s ease infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+    .status-text {
+      font-size: 1.5em;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .status-subtext {
+      font-size: 1.1em;
+      opacity: 0.8;
+    }
+    .result-time {
+      font-size: 3.5em;
+      font-weight: bold;
+      color: #34C759;
+      margin: 20px 0;
+    }
+    .btn {
+      width: 100%;
+      padding: 20px;
+      font-size: 1.4em;
+      font-weight: 600;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 15px;
+    }
+    .btn-primary {
+      background: #007AFF;
+      color: white;
+      box-shadow: 0 4px 15px rgba(0, 122, 255, 0.4);
+    }
+    .btn-primary:active {
+      transform: scale(0.95);
+    }
+    .btn-secondary {
+      background: rgba(255,255,255,0.15);
+      color: white;
+      backdrop-filter: blur(10px);
+    }
+    .tap-area {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      cursor: pointer;
+    }
+    .tap-area.active {
+      display: block;
+    }
+  </style>
+  <style id="shared-styles"></style>
+  <script src="shared.js"></script>
 </head>
 <body>
+  <div class="container">
+    <div class="header">
+      <h1>🔊 Sound Reaction</h1>
+      <p>ฝึกความไวในการตอบสนองต่อเสียง</p>
+    </div>
 
-<button class="back-btn" onclick="window.location.href='index.html'">← กลับ</button>
+    <div class="status-box" id="statusBox">
+      <div class="status-icon">👂</div>
+      <div class="status-text">พร้อมที่จะเริ่มแล้วหรือยัง?</div>
+      <div class="status-subtext">เมื่อได้ยินเสียงหรือเห็นสัญญาณ<br>ให้แตะหน้าจอให้เร็วที่สุด</div>
+    </div>
 
-<div class="container">
-  <h1>🔊 Sound Reaction</h1>
-  
-  <div class="status" id="status">พร้อมเริ่มเกม</div>
-  
-  <div class="tap-area" id="tapArea" onclick="handleTap()">
-    <span id="tapIcon">👂</span>
+    <button class="btn btn-primary" id="startBtn" onclick="startGame()">เริ่มเกม</button>
+    <button class="btn btn-secondary" onclick="location.href='index.html'">← กลับหน้าหลัก</button>
   </div>
-  
-  <div class="results" id="results" style="display:none;"></div>
-  
-  <button class="btn btn-primary" id="startBtn" onclick="startRound()">เริ่มเกม</button>
-  <button class="btn btn-secondary" onclick="window.location.href='index.html'">กลับหน้าหลัก</button>
-</div>
 
-<script src="shared.js"></script>
-<script>
-let waiting = false;
-let canTap = false;
-let startTime = 0;
-let reactionTimes = [];
-let roundCount = 0;
-const maxRounds = 5;
+  <div class="tap-area" id="tapArea"></div>
 
-function startRound() {
-  if (roundCount >= maxRounds) {
-    showFinalResults();
-    return;
-  }
-  
-  document.getElementById('startBtn').style.display = 'none';
-  document.getElementById('results').style.display = 'none';
-  document.getElementById('status').textContent = 'เตรียมตัว...';
-  document.getElementById('tapArea').className = 'tap-area';
-  document.getElementById('tapIcon').textContent = '👂';
-  
-  waiting = true;
-  canTap = false;
-  
-  const delay = 2000 + Math.random() * 4000;
-  
-  setTimeout(() => {
-    if (!waiting) return;
-    
-    canTap = true;
-    startTime = Date.now();
-    document.getElementById('status').textContent = 'แตะเลย!';
-    document.getElementById('tapArea').classList.add('ready');
-    document.getElementById('tapIcon').textContent = '👆';
-    
-    speak('แตะ');
-    beep(1000, 200);
-  }, delay);
-}
+  <script>
+    let gameState = 'idle'; // idle, waiting, ready, result
+    let startTime;
+    let timeoutId;
 
-function handleTap() {
-  if (!waiting) return;
-  
-  if (!canTap) {
-    // แตะเร็วเกินไป
-    waiting = false;
-    document.getElementById('status').textContent = '❌ เร็วไป!';
-    document.getElementById('tapArea').className = 'tap-area';
-    document.getElementById('tapIcon').textContent = '⚠️';
-    toast('แตะเร็วเกินไป รอเสียงก่อนนะ');
-    
-    setTimeout(() => {
-      document.getElementById('status').textContent = 'ลองใหม่';
-      document.getElementById('startBtn').style.display = 'block';
-      document.getElementById('startBtn').textContent = 'ลองใหม่';
-    }, 1500);
-  } else {
-    // แตะถูกต้อง
-    const reactionTime = Date.now() - startTime;
-    reactionTimes.push(reactionTime);
-    roundCount++;
-    waiting = false;
-    canTap = false;
-    
-    document.getElementById('status').textContent = `⚡ ${reactionTime} ms`;
-    document.getElementById('tapArea').className = 'tap-area';
-    document.getElementById('tapIcon').textContent = '✓';
-    
-    setTimeout(() => {
-      if (roundCount < maxRounds) {
-        document.getElementById('status').textContent = `รอบที่ ${roundCount + 1}/${maxRounds}`;
-        document.getElementById('startBtn').textContent = 'รอบถัดไป';
+    async function startGame() {
+      document.getElementById('startBtn').style.display = 'none';
+      gameState = 'waiting';
+      
+      updateStatus('⏳', 'กำลังรอ...', 'จงตั้งสมาธิ อย่าแตะก่อนเวลา!');
+      document.body.classList.remove('ready');
+      
+      // สุ่มเวลารอ 2-6 วินาที
+      const waitTime = 2000 + Math.random() * 4000;
+      
+      const tapArea = document.getElementById('tapArea');
+      tapArea.classList.add('active');
+      tapArea.onclick = handleTap;
+      
+      timeoutId = setTimeout(() => {
+        if (gameState === 'waiting') {
+          gameState = 'ready';
+          document.body.classList.add('ready');
+          updateStatus('⚡', 'แตะเดี๋ยวนี้!', '');
+          beep(800, 200);
+          speak('ตอนนี้');
+          startTime = Date.now();
+        }
+      }, waitTime);
+    }
+
+    function handleTap() {
+      if (gameState === 'waiting') {
+        // แตะเร็วเกินไป
+        clearTimeout(timeoutId);
+        gameState = 'idle';
+        document.getElementById('tapArea').classList.remove('active');
+        document.body.classList.remove('ready');
+        updateStatus('❌', 'เร็วไป!', 'รอให้มีสัญญาณก่อนนะ');
+        toast('กดเร็วเกินไป! ลองใหม่อีกครั้ง');
         document.getElementById('startBtn').style.display = 'block';
-      } else {
-        showFinalResults();
+        document.getElementById('startBtn').textContent = 'ลองอีกครั้ง';
+      } else if (gameState === 'ready') {
+        // แตะถูกต้อง
+        const reactionTime = Date.now() - startTime;
+        gameState = 'result';
+        document.getElementById('tapArea').classList.remove('active');
+        document.body.classList.remove('ready');
+        
+        showResult(reactionTime);
       }
-    }, 1500);
-  }
-}
+    }
 
-function showFinalResults() {
-  if (reactionTimes.length === 0) {
-    toast('ยังไม่มีผลการเล่น');
-    return;
-  }
-  
-  const avg = Math.round(reactionTimes.reduce((a, b) => a + b, 0) / reactionTimes.length);
-  const best = Math.min(...reactionTimes);
-  const worst = Math.max(...reactionTimes);
-  
-  const resultsHTML = `
-    <div class="result-item">
-      <span>เฉลี่ย:</span>
-      <span class="result-value">${avg} ms</span>
-    </div>
-    <div class="result-item">
-      <span>เร็วสุด:</span>
-      <span class="result-value">${best} ms</span>
-    </div>
-    <div class="result-item">
-      <span>ช้าสุด:</span>
-      <span class="result-value">${worst} ms</span>
-    </div>
-  `;
-  
-  document.getElementById('results').innerHTML = resultsHTML;
-  document.getElementById('results').style.display = 'block';
-  document.getElementById('status').textContent = '🎉 เสร็จสิ้น!';
-  document.getElementById('startBtn').textContent = 'เล่นใหม่';
-  document.getElementById('startBtn').style.display = 'block';
-  
-  // Reset
-  reactionTimes = [];
-  roundCount = 0;
-  
-  toast('ฝึกเสร็จแล้ว!', 3000);
-}
-</script>
+    function showResult(time) {
+      const statusBox = document.getElementById('statusBox');
+      let message = '';
+      let icon = '';
+      
+      if (time < 300) {
+        icon = '🚀';
+        message = 'เร็วมาก!';
+      } else if (time < 500) {
+        icon = '⚡';
+        message = 'ดีเยี่ยม!';
+      } else if (time < 700) {
+        icon = '👍';
+        message = 'ดีมาก!';
+      } else {
+        icon = '✅';
+        message = 'ผ่าน!';
+      }
+      
+      statusBox.innerHTML = `
+        <div class="status-icon">${icon}</div>
+        <div class="status-text">${message}</div>
+        <div class="result-time">${time} ms</div>
+        <div class="status-subtext">เวลาตอบสนองของคุณ</div>
+      `;
+      
+      beep(1000, 150);
+      
+      document.getElementById('startBtn').style.display = 'block';
+      document.getElementById('startBtn').textContent = 'เล่นอีกครั้ง';
+    }
 
+    function updateStatus(icon, text, subtext) {
+      document.getElementById('statusBox').innerHTML = `
+        <div class="status-icon">${icon}</div>
+        <div class="status-text">${text}</div>
+        <div class="status-subtext">${subtext}</div>
+      `;
+    }
+  </script>
+  <script>
+    document.getElementById('shared-styles').textContent = sharedStyles;
+  </script>
 </body>
 </html>
