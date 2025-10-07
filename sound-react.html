@@ -140,8 +140,12 @@
 
     async function startGame() {
       document.getElementById('startBtn').style.display = 'none';
-      gameState = 'waiting';
       
+      // Countdown ก่อน
+      await countdownOverlay(3);
+      
+      // เริ่มเกมหลัง countdown จบ
+      gameState = 'waiting';
       updateStatus('⏳', 'กำลังรอ...', 'จงตั้งสมาธิ อย่าแตะก่อนเวลา!');
       document.body.classList.remove('ready');
       
