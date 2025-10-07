@@ -323,7 +323,10 @@
       gameScreen.style.display = 'block';
       gameScreen.style.backgroundColor = selectedBg === 'dark' ? '#1a1a1a' : '#ffffff';
 
+      // Countdown ก่อน แล้วค่อยเริ่มเกม
       await countdownOverlay(3);
+      
+      // เริ่มเกมหลัง countdown จบ
       showNextDot();
     }
 
