@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>🧭 Direction Tap</title>
+  <title>🧠 Memory Pattern</title>
   <style>
     * {
       margin: 0;
@@ -14,25 +14,17 @@
     }
     body {
       font-family: 'Sarabun', -apple-system, system-ui, sans-serif;
-      overflow: hidden;
-    }
-    .setup-screen {
-      min-height: 100vh;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 20px;
+      min-height: 100vh;
       display: flex;
-      flex-direction: column;
+      align-items: center;
       justify-content: center;
+      padding: 20px;
+      color: white;
     }
-    .game-screen {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: #f5f5f5;
+    .container {
+      width: 100%;
+      max-width: 500px;
     }
     .header {
       text-align: center;
@@ -42,69 +34,62 @@
       font-size: 2.2em;
       margin-bottom: 10px;
     }
-    .section {
-      background: white;
+    .info-box {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
       border-radius: 16px;
       padding: 20px;
-      margin-bottom: 15px;
-      color: #333;
+      text-align: center;
+      margin-bottom: 30px;
     }
-    .section-title {
-      font-size: 1.2em;
-      font-weight: 600;
-      margin-bottom: 15px;
-      color: #667eea;
+    .level-display {
+      font-size: 2em;
+      font-weight: bold;
+      margin-bottom: 10px;
     }
-    .slider-group {
-      margin-bottom: 15px;
-    }
-    .slider-label {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
-      font-size: 1em;
-    }
-    .slider {
-      width: 100%;
-      height: 40px;
-      -webkit-appearance: none;
-      background: #e0e0e0;
-      border-radius: 20px;
-      outline: none;
-    }
-    .slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 30px;
-      height: 30px;
-      background: #667eea;
-      border-radius: 50%;
-      cursor: pointer;
-    }
-    .mode-select {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .mode-option {
-      padding: 15px;
-      border-radius: 12px;
-      border: 3px solid transparent;
-      cursor: pointer;
-      background: #f5f5f5;
-      transition: all 0.3s ease;
-    }
-    .mode-option.selected {
-      border-color: #34C759;
-      background: #e8f5e9;
-    }
-    .mode-title {
+    .instruction {
       font-size: 1.1em;
-      font-weight: 600;
-      margin-bottom: 5px;
+      opacity: 0.9;
     }
-    .mode-desc {
-      font-size: 0.9em;
-      color: #666;
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+    .color-btn {
+      aspect-ratio: 1;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    .color-btn:active {
+      transform: scale(0.95);
+    }
+    .color-btn.active {
+      transform: scale(1.15);
+      box-shadow: 0 0 30px currentColor, 0 0 60px currentColor;
+      filter: brightness(1.5);
+    }
+    .color-btn.red {
+      background: #FF3B30;
+    }
+    .color-btn.yellow {
+      background: #FFCC00;
+    }
+    .color-btn.green {
+      background: #34C759;
+    }
+    .color-btn.blue {
+      background: #007AFF;
+    }
+    .color-btn.disabled {
+      opacity: 0.5;
+      pointer-events: none;
     }
     .btn {
       width: 100%;
@@ -115,230 +100,73 @@
       border-radius: 12px;
       cursor: pointer;
       transition: all 0.3s ease;
+      margin-bottom: 10px;
     }
     .btn-primary {
-      background: #34C759;
-      color: white;
-      box-shadow: 0 4px 15px rgba(52, 199, 89, 0.3);
+      background: white;
+      color: #667eea;
     }
     .btn-primary:active {
       transform: scale(0.95);
     }
     .btn-secondary {
-      background: white;
-      color: #667eea;
-      margin-top: 10px;
-    }
-    .top-area {
-      height: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: white;
-      position: relative;
-    }
-    .arrow-display {
-      font-size: 15vw;
-      animation: fadeIn 0.3s ease;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.8); }
-      to { opacity: 1; transform: scale(1); }
-    }
-    .score-bar {
-      position: absolute;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(255, 255, 255, 0.2);
       color: white;
-      padding: 12px 25px;
-      border-radius: 20px;
-      font-size: 1.2em;
-      font-weight: 600;
       backdrop-filter: blur(10px);
-    }
-    .bottom-area {
-      height: 50%;
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      grid-template-rows: repeat(2, 1fr);
-      gap: 1px;
-      background: #ddd;
-    }
-    .dir-btn {
-      background: #667eea;
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10vw;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .dir-btn:active {
-      background: #5568d3;
-      transform: scale(0.95);
-    }
-    .dir-btn.up {
-      grid-column: 1 / 3;
-    }
-    .dir-btn.down {
-      grid-column: 1 / 3;
-    }
-    .result-screen {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.95);
-      color: white;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      z-index: 200;
-    }
-    .result-box {
-      text-align: center;
-      max-width: 400px;
-    }
-    .result-icon {
-      font-size: 5em;
-      margin-bottom: 20px;
-    }
-    .result-title {
-      font-size: 2em;
-      font-weight: bold;
-      margin-bottom: 30px;
-    }
-    .result-stats {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      padding: 25px;
-      margin-bottom: 30px;
-    }
-    .stat-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 1.3em;
-      margin-bottom: 15px;
-    }
-    .stat-value {
-      font-weight: bold;
-      color: #34C759;
     }
   </style>
   <style id="shared-styles"></style>
   <script src="shared.js"></script>
 </head>
 <body>
-  <div class="setup-screen">
+  <div class="container">
     <div class="header">
-      <h1>🧭 Direction Tap</h1>
-      <p>ฝึกตอบสนองต่อทิศทาง</p>
+      <h1>🧠 Memory Pattern</h1>
+      <p>ฝึกความจำลำดับสี</p>
     </div>
 
-    <div class="section">
-      <div class="section-title">ตั้งค่าเกม</div>
-      <div class="slider-group">
-        <div class="slider-label">
-          <span>จำนวนรอบ</span>
-          <span id="roundsValue">10 รอบ</span>
-        </div>
-        <input type="range" class="slider" id="roundsSlider" min="5" max="30" value="10">
-      </div>
+    <div class="info-box">
+      <div class="level-display" id="levelDisplay">ระดับ 1</div>
+      <div class="instruction" id="instruction">กดเริ่มเกมเพื่อเล่น</div>
     </div>
 
-    <div class="section">
-      <div class="section-title">เลือกโหมด</div>
-      <div class="mode-select">
-        <div class="mode-option selected" onclick="selectMode('normal')">
-          <div class="mode-title">✅ ตรงไปตรงมา</div>
-          <div class="mode-desc">เสียงกับภาพตรงกัน ง่ายสำหรับฝึกพื้นฐาน</div>
-        </div>
-        <div class="mode-option" onclick="selectMode('trick')">
-          <div class="mode-title">🔁 หลอกสมอง</div>
-          <div class="mode-desc">เสียงกับภาพไม่ตรงกัน ท้าทายสมาธิ</div>
-        </div>
-      </div>
+    <div class="color-grid">
+      <button class="color-btn red disabled" id="red" onclick="playerTap('red')"></button>
+      <button class="color-btn yellow disabled" id="yellow" onclick="playerTap('yellow')"></button>
+      <button class="color-btn green disabled" id="green" onclick="playerTap('green')"></button>
+      <button class="color-btn blue disabled" id="blue" onclick="playerTap('blue')"></button>
     </div>
 
-    <button class="btn btn-primary" onclick="startGame()">🚀 เริ่มเกม</button>
+    <button class="btn btn-primary" id="startBtn" onclick="startGame()">🚀 เริ่มเกม</button>
     <button class="btn btn-secondary" onclick="location.href='index.html'">← กลับหน้าหลัก</button>
   </div>
 
-  <div class="game-screen" id="gameScreen">
-    <div class="top-area">
-      <div class="score-bar" id="scoreBar">0 / 0</div>
-      <div class="arrow-display" id="arrowDisplay">↑</div>
-    </div>
-    <div class="bottom-area">
-      <button class="dir-btn up" onclick="playerTap('up')">↑</button>
-      <button class="dir-btn left" onclick="playerTap('left')">←</button>
-      <button class="dir-btn right" onclick="playerTap('right')">→</button>
-      <button class="dir-btn down" onclick="playerTap('down')">↓</button>
-    </div>
-  </div>
-
-  <div class="result-screen" id="resultScreen">
-    <div class="result-box">
-      <div class="result-icon">🎯</div>
-      <div class="result-title">เกมจบแล้ว!</div>
-      <div class="result-stats">
-        <div class="stat-row">
-          <span>ถูกต้อง:</span>
-          <span class="stat-value" id="correctCount">0</span>
-        </div>
-        <div class="stat-row">
-          <span>ผิด:</span>
-          <span class="stat-value" id="wrongCount">0</span>
-        </div>
-        <div class="stat-row">
-          <span>ความแม่นยำ:</span>
-          <span class="stat-value" id="accuracy">0%</span>
-        </div>
-      </div>
-      <button class="btn btn-primary" onclick="location.reload()">เล่นอีกครั้ง</button>
-      <button class="btn btn-secondary" onclick="location.href='index.html'">กลับหน้าหลัก</button>
-    </div>
-  </div>
-
   <script>
-    const directions = [
-      { key: 'up', arrow: '↑', name: 'ขึ้น' },
-      { key: 'down', arrow: '↓', name: 'ลง' },
-      { key: 'left', arrow: '←', name: 'ซ้าย' },
-      { key: 'right', arrow: '→', name: 'ขวา' }
-    ];
-
-    let selectedMode = 'normal';
-    let totalRounds;
-    let currentRound = 0;
-    let correctAnswers = 0;
-    let wrongAnswers = 0;
-    let currentCorrectAnswer;
-    let waitingForAnswer = false;
-
-    document.getElementById('roundsSlider').oninput = function() {
-      document.getElementById('roundsValue').textContent = this.value + ' รอบ';
+    const colors = ['red', 'yellow', 'green', 'blue'];
+    const colorNames = {
+      red: 'แดง',
+      yellow: 'เหลือง',
+      green: 'เขียว',
+      blue: 'น้ำเงิน'
+    };
+    const colorFreq = {
+      red: 400,
+      yellow: 500,
+      green: 600,
+      blue: 700
     };
 
-    function selectMode(mode) {
-      selectedMode = mode;
-      document.querySelectorAll('.mode-option').forEach(el => el.classList.remove('selected'));
-      event.target.closest('.mode-option').classList.add('selected');
-    }
+    let sequence = [];
+    let playerSequence = [];
+    let level = 1;
+    let gameActive = false;
+    let showingSequence = false;
 
     async function startGame() {
-      totalRounds = parseInt(document.getElementById('roundsSlider').value);
-      currentRound = 0;
-      correctAnswers = 0;
-      wrongAnswers = 0;
-
-      document.querySelector('.setup-screen').style.display = 'none';
-      document.getElementById('gameScreen').style.display = 'block';
+      document.getElementById('startBtn').style.display = 'none';
+      sequence = [];
+      level = 1;
+      gameActive = true;
 
       // Countdown ก่อน แล้วค่อยเริ่มเกม
       await countdownOverlay(3);
@@ -347,73 +175,104 @@
       nextRound();
     }
 
-    function nextRound() {
-      if (currentRound >= totalRounds) {
-        endGame();
-        return;
+    async function nextRound() {
+      playerSequence = [];
+      sequence.push(colors[Math.floor(Math.random() * colors.length)]);
+      
+      document.getElementById('levelDisplay').textContent = `ระดับ ${level}`;
+      document.getElementById('instruction').textContent = 'จดจำลำดับสี...';
+      
+      disableButtons();
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      await showSequence();
+      
+      document.getElementById('instruction').textContent = 'แตะตามลำดับที่เห็น!';
+      enableButtons();
+    }
+
+    async function showSequence() {
+      showingSequence = true;
+      
+      for (let i = 0; i < sequence.length; i++) {
+        await new Promise(resolve => setTimeout(resolve, 300));
+        await flashColor(sequence[i]);
       }
+      
+      showingSequence = false;
+    }
 
-      currentRound++;
-      updateScore();
+    function flashColor(color) {
+      return new Promise(resolve => {
+        const btn = document.getElementById(color);
+        btn.classList.add('active');
+        
+        beep(colorFreq[color], 400);
+        speak(colorNames[color]);
+        
+        setTimeout(() => {
+          btn.classList.remove('active');
+          resolve();
+        }, 700);
+      });
+    }
 
-      waitingForAnswer = false;
+    function playerTap(color) {
+      if (showingSequence || !gameActive) return;
+      
+      playerSequence.push(color);
+      
+      const btn = document.getElementById(color);
+      btn.classList.add('active');
+      beep(colorFreq[color], 200);
       
       setTimeout(() => {
-        showDirection();
-      }, 800);
+        btn.classList.remove('active');
+      }, 300);
+      
+      checkSequence();
     }
 
-    function showDirection() {
-      const correctDir = directions[Math.floor(Math.random() * directions.length)];
-      currentCorrectAnswer = correctDir.key;
-
-      let displayDir;
-      if (selectedMode === 'trick') {
-        // โหมดหลอกสมอง: สุ่มภาพที่ไม่ตรงกับเสียง
-        const otherDirs = directions.filter(d => d.key !== correctDir.key);
-        displayDir = otherDirs[Math.floor(Math.random() * otherDirs.length)];
-      } else {
-        displayDir = correctDir;
+    function checkSequence() {
+      const currentIndex = playerSequence.length - 1;
+      
+      if (playerSequence[currentIndex] !== sequence[currentIndex]) {
+        gameOver();
+        return;
       }
-
-      document.getElementById('arrowDisplay').textContent = displayDir.arrow;
-      speak(correctDir.name);
-      beep(600, 150);
       
-      waitingForAnswer = true;
-    }
-
-    function playerTap(direction) {
-      if (!waitingForAnswer) return;
-      
-      waitingForAnswer = false;
-
-      if (direction === currentCorrectAnswer) {
-        correctAnswers++;
-        toast('✅ ถูกต้อง!', 800);
-        beep(800, 150);
-      } else {
-        wrongAnswers++;
-        toast('❌ ผิด!', 800);
-        beep(300, 300);
+      if (playerSequence.length === sequence.length) {
+        level++;
+        toast('✅ ถูกต้อง!', 1500);
+        setTimeout(() => nextRound(), 2000);
       }
-
-      nextRound();
     }
 
-    function updateScore() {
-      document.getElementById('scoreBar').textContent = `${currentRound} / ${totalRounds}`;
-    }
-
-    function endGame() {
-      document.getElementById('correctCount').textContent = correctAnswers;
-      document.getElementById('wrongCount').textContent = wrongAnswers;
-      const accuracy = totalRounds > 0 ? Math.round((correctAnswers / totalRounds) * 100) : 0;
-      document.getElementById('accuracy').textContent = accuracy + '%';
+    function gameOver() {
+      gameActive = false;
+      disableButtons();
       
-      document.getElementById('resultScreen').style.display = 'flex';
-      beep(600, 200);
-      setTimeout(() => beep(800, 200), 200);
+      document.getElementById('instruction').textContent = `ผิดพลาด! คุณเล่นได้ ${level} ระดับ`;
+      
+      toast('❌ ผิดพลาด!', 2000);
+      beep(200, 500);
+      
+      setTimeout(() => {
+        document.getElementById('startBtn').style.display = 'block';
+        document.getElementById('startBtn').textContent = 'เล่นอีกครั้ง';
+        document.getElementById('instruction').textContent = 'กดเริ่มเกมใหม่';
+      }, 2500);
+    }
+
+    function disableButtons() {
+      colors.forEach(color => {
+        document.getElementById(color).classList.add('disabled');
+      });
+    }
+
+    function enableButtons() {
+      colors.forEach(color => {
+        document.getElementById(color).classList.remove('disabled');
+      });
     }
   </script>
   <script>
